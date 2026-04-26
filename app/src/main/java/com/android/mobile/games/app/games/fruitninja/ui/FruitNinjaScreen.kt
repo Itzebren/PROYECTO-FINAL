@@ -42,10 +42,10 @@ fun FruitNinjaScreen(
     }
 
     LaunchedEffect(
-        key1 = screenWidth,
-        key2 = screenHeight,
-        key3 = gameState.isGameOver,
-        key4 = difficulty
+        screenWidth,
+        screenHeight,
+        gameState.isGameOver,
+        difficulty
     ) {
         while (
             screenWidth > 0f &&
