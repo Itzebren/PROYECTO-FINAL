@@ -4,6 +4,8 @@ data class FruitNinjaGameState(
 
     val items: List<FruitNinjaItem> = emptyList(),
 
+    val effects: List<FruitNinjaEffect> = emptyList(),
+
     val score: Int = 0,
 
     val lives: Int = 3,
