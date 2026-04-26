@@ -70,12 +70,12 @@ private fun getItemRadius(
     type: FruitNinjaItemType
 ): Float {
     return when (type) {
-        FruitNinjaItemType.BOMB -> 34f
-        FruitNinjaItemType.BANANA -> 42f
-        FruitNinjaItemType.PINEAPPLE -> 44f
-        FruitNinjaItemType.WATERMELON -> 46f
-        FruitNinjaItemType.COCONUT -> 40f
+        FruitNinjaItemType.BOMB -> 44f
+        FruitNinjaItemType.BANANA -> 56f
+        FruitNinjaItemType.PINEAPPLE -> 58f
+        FruitNinjaItemType.WATERMELON -> 60f
+        FruitNinjaItemType.COCONUT -> 52f
         FruitNinjaItemType.APPLE,
-        FruitNinjaItemType.ORANGE -> 38f
+        FruitNinjaItemType.ORANGE -> 50f
     }
 }
