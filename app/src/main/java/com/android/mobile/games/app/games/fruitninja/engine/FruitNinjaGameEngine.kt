@@ -296,7 +296,7 @@ class FruitNinjaGameEngine(
             effectType = effectType,
             position = item.position,
             velocity = velocity,
-            size = item.radius * 1.55f,
+            size = item.radius * 2.5f,
             maxAgeFrames = FRUIT_HALF_MAX_AGE_FRAMES
         )
     }
