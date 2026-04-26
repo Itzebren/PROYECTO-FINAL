@@ -4,23 +4,38 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.android.mobile.games.app.games.fruitninja.data.FruitNinjaScoreRepository
 import com.android.mobile.games.app.games.fruitninja.engine.FruitNinjaGameEngine
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun FruitNinjaScreen(
     difficulty: FruitNinjaDifficulty,
     onBackToMenuClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val scoreRepository = remember {
+        FruitNinjaScoreRepository(context = context)
+    }
+
+    val bestScore by scoreRepository
+        .getBestScore(difficulty)
+        .collectAsState(initial = 0)
+
     val gameEngine = remember(difficulty) {
         FruitNinjaGameEngine(difficulty = difficulty)
     }
@@ -35,10 +50,6 @@ fun FruitNinjaScreen(
 
     var screenHeight by remember {
         mutableFloatStateOf(0f)
-    }
-
-    var bestScore by remember(difficulty) {
-        mutableIntStateOf(0)
     }
 
     LaunchedEffect(
@@ -63,8 +74,8 @@ fun FruitNinjaScreen(
     }
 
     LaunchedEffect(
-        key1 = gameState.isGameOver,
-        key2 = difficulty
+        gameState.isGameOver,
+        difficulty
     ) {
         while (!gameState.isGameOver) {
             delay(1_000L)
@@ -76,8 +87,11 @@ fun FruitNinjaScreen(
     }
 
     LaunchedEffect(gameState.isGameOver) {
-        if (gameState.isGameOver && gameState.score > bestScore) {
-            bestScore = gameState.score
+        if (gameState.isGameOver) {
+            scoreRepository.saveBestScoreIfNeeded(
+                difficulty = difficulty,
+                score = gameState.score
+            )
         }
     }
 
@@ -110,12 +124,28 @@ fun FruitNinjaScreen(
         if (gameState.isGameOver) {
             FruitNinjaGameOverPanel(
                 score = gameState.score,
-                bestScore = bestScore,
+                bestScore = maxOf(bestScore, gameState.score),
                 difficulty = difficulty,
                 onRestartClick = {
-                    gameState = gameEngine.createInitialState()
+                    coroutineScope.launch {
+                        scoreRepository.saveBestScoreIfNeeded(
+                            difficulty = difficulty,
+                            score = gameState.score
+                        )
+
+                        gameState = gameEngine.createInitialState()
+                    }
                 },
-                onBackToMenuClick = onBackToMenuClick,
+                onBackToMenuClick = {
+                    coroutineScope.launch {
+                        scoreRepository.saveBestScoreIfNeeded(
+                            difficulty = difficulty,
+                            score = gameState.score
+                        )
+
+                        onBackToMenuClick()
+                    }
+                },
                 modifier = Modifier.align(Alignment.Center)
             )
         }
