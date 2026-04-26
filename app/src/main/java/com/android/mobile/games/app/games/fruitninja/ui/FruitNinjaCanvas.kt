@@ -11,13 +11,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.android.mobile.games.app.games.fruitninja.assets.assets
 import com.android.mobile.games.app.games.fruitninja.assets.fruitNinjaBackgroundAsset
+import com.android.mobile.games.app.games.fruitninja.assets.fruitNinjaExplosionAsset
+import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaEffect
+import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaEffectType
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaGameState
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaItem
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaItemType
@@ -37,7 +39,12 @@ fun FruitNinjaCanvas(
         id = fruitNinjaBackgroundAsset()
     )
 
+    val explosionImage = ImageBitmap.imageResource(
+        id = fruitNinjaExplosionAsset()
+    )
+
     val itemImages = rememberFruitNinjaItemImages()
+    val effectImages = rememberFruitNinjaEffectImages()
 
     Canvas(
         modifier = Modifier
@@ -76,6 +83,20 @@ fun FruitNinjaCanvas(
             image = backgroundImage
         )
 
+        gameState.effects.forEach { effect ->
+            val image = when (effect.effectType) {
+                FruitNinjaEffectType.EXPLOSION -> explosionImage
+                else -> effectImages[effect.itemType]?.get(effect.effectType)
+            }
+
+            if (image != null) {
+                drawFruitNinjaEffect(
+                    effect = effect,
+                    image = image
+                )
+            }
+        }
+
         gameState.items.forEach { item ->
             val image = itemImages[item.type]
 
@@ -99,6 +120,36 @@ private fun rememberFruitNinjaItemImages(): Map<FruitNinjaItemType, ImageBitmap>
         ImageBitmap.imageResource(
             id = type.assets().whole
         )
+    }
+}
+
+@Composable
+private fun rememberFruitNinjaEffectImages(): Map<FruitNinjaItemType, Map<FruitNinjaEffectType, ImageBitmap>> {
+    return FruitNinjaItemType.entries.associateWith { type ->
+        val assets = type.assets()
+
+        buildMap {
+            assets.splash?.let { resourceId ->
+                put(
+                    FruitNinjaEffectType.SPLASH,
+                    ImageBitmap.imageResource(id = resourceId)
+                )
+            }
+
+            assets.halfOne?.let { resourceId ->
+                put(
+                    FruitNinjaEffectType.HALF_ONE,
+                    ImageBitmap.imageResource(id = resourceId)
+                )
+            }
+
+            assets.halfTwo?.let { resourceId ->
+                put(
+                    FruitNinjaEffectType.HALF_TWO,
+                    ImageBitmap.imageResource(id = resourceId)
+                )
+            }
+        }
     }
 }
 
@@ -126,8 +177,33 @@ private fun DrawScope.drawFruitNinjaItem(
 ) {
     val imageSize = (item.radius * 2.4f).roundToInt()
 
-    val topLeftX = (item.position.x - imageSize / 2f).roundToInt()
-    val topLeftY = (item.position.y - imageSize / 2f).roundToInt()
+    drawCenteredImage(
+        image = image,
+        center = item.position,
+        imageSize = imageSize
+    )
+}
+
+private fun DrawScope.drawFruitNinjaEffect(
+    effect: FruitNinjaEffect,
+    image: ImageBitmap
+) {
+    val imageSize = effect.size.roundToInt()
+
+    drawCenteredImage(
+        image = image,
+        center = effect.position,
+        imageSize = imageSize
+    )
+}
+
+private fun DrawScope.drawCenteredImage(
+    image: ImageBitmap,
+    center: Offset,
+    imageSize: Int
+) {
+    val topLeftX = (center.x - imageSize / 2f).roundToInt()
+    val topLeftY = (center.y - imageSize / 2f).roundToInt()
 
     drawImage(
         image = image,
