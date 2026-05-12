@@ -12,64 +12,15 @@ data class FruitNinjaItemAssets(
 )
 
 @DrawableRes
-fun fruitNinjaBackgroundAsset(): Int {
-    return R.drawable.fruit_ninja_background
-}
+fun fruitNinjaBackgroundAsset(): Int = R.drawable.fondo_lab_slash
 
 @DrawableRes
-fun fruitNinjaExplosionAsset(): Int {
-    return R.drawable.fruit_ninja_explosion
-}
+fun fruitNinjaExplosionAsset(): Int = R.drawable.fruit_ninja_explosion
 
-fun FruitNinjaItemType.assets(): FruitNinjaItemAssets {
-    return when (this) {
-        FruitNinjaItemType.APPLE -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_apple,
-            halfOne = R.drawable.fruit_ninja_apple_half_1,
-            halfTwo = R.drawable.fruit_ninja_apple_half_2,
-            splash = R.drawable.fruit_ninja_splash_red
-        )
-
-        FruitNinjaItemType.BANANA -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_banana,
-            halfOne = R.drawable.fruit_ninja_banana_half_1,
-            halfTwo = R.drawable.fruit_ninja_banana_half_2,
-            splash = R.drawable.fruit_ninja_splash_yellow
-        )
-
-        FruitNinjaItemType.WATERMELON -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_watermelon,
-            halfOne = R.drawable.fruit_ninja_watermelon_half_1,
-            halfTwo = R.drawable.fruit_ninja_watermelon_half_2,
-            splash = R.drawable.fruit_ninja_splash_red
-        )
-
-        FruitNinjaItemType.ORANGE -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_orange,
-            halfOne = R.drawable.fruit_ninja_orange_half_1,
-            halfTwo = R.drawable.fruit_ninja_orange_half_2,
-            splash = R.drawable.fruit_ninja_splash_orange
-        )
-
-        FruitNinjaItemType.PINEAPPLE -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_pineapple,
-            halfOne = R.drawable.fruit_ninja_pineapple_half_1,
-            halfTwo = R.drawable.fruit_ninja_pineapple_half_2,
-            splash = R.drawable.fruit_ninja_splash_yellow
-        )
-
-        FruitNinjaItemType.COCONUT -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_coconut,
-            halfOne = R.drawable.fruit_ninja_coconut_half_1,
-            halfTwo = R.drawable.fruit_ninja_coconut_half_2,
-            splash = R.drawable.fruit_ninja_splash_transparent
-        )
-
-        FruitNinjaItemType.BOMB -> FruitNinjaItemAssets(
-            whole = R.drawable.fruit_ninja_bomb,
-            halfOne = null,
-            halfTwo = null,
-            splash = null
-        )
-    }
+fun FruitNinjaItemType.assets(): FruitNinjaItemAssets = when (this) {
+    FruitNinjaItemType.BUG -> FruitNinjaItemAssets(R.drawable.bug, R.drawable.bug_izq, R.drawable.bug_der, null)
+    FruitNinjaItemType.ERROR -> FruitNinjaItemAssets(R.drawable.error, R.drawable.error_izq, R.drawable.error_der, null)
+    FruitNinjaItemType.NULO -> FruitNinjaItemAssets(R.drawable.nulo, R.drawable.nulo_izq, R.drawable.nulo_der, null)
+    FruitNinjaItemType.IPN_CARD -> FruitNinjaItemAssets(R.drawable.ipn_card, R.drawable.ipn_card_izq, R.drawable.ipn_card_der, null)
+    FruitNinjaItemType.CAFE_TACHADO -> FruitNinjaItemAssets(R.drawable.cafe_tachado, R.drawable.cafe_tachado_izq, R.drawable.cafe_tachado_der, null)
 }

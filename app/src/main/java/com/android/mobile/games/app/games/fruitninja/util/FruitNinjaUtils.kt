@@ -45,37 +45,20 @@ fun isPointInsideItem(
     return distance <= item.radius
 }
 
-private fun createRandomItemType(
-    difficulty: FruitNinjaDifficulty
-): FruitNinjaItemType {
-    val bombRoll = Random.nextInt(100)
 
-    if (bombRoll < difficulty.bombProbability) {
-        return FruitNinjaItemType.BOMB
+private fun createRandomItemType(difficulty: FruitNinjaDifficulty): FruitNinjaItemType {
+    val roll = Random.nextInt(100)
+    return when {
+        // En Modo Relax NO hay café tachado
+        roll < difficulty.penaltyProbability && difficulty != FruitNinjaDifficulty.RELAX -> FruitNinjaItemType.CAFE_TACHADO
+        // Bonus de IPN Card solo en Salvar el Semestre
+        roll > 92 && difficulty == FruitNinjaDifficulty.SAVE_SEMESTER -> FruitNinjaItemType.IPN_CARD
+        else -> listOf(FruitNinjaItemType.BUG, FruitNinjaItemType.ERROR, FruitNinjaItemType.NULO).random()
     }
-
-    val fruits = listOf(
-        FruitNinjaItemType.APPLE,
-        FruitNinjaItemType.BANANA,
-        FruitNinjaItemType.WATERMELON,
-        FruitNinjaItemType.ORANGE,
-        FruitNinjaItemType.PINEAPPLE,
-        FruitNinjaItemType.COCONUT
-    )
-
-    return fruits.random()
 }
 
-private fun getItemRadius(
-    type: FruitNinjaItemType
-): Float {
-    return when (type) {
-        FruitNinjaItemType.BOMB -> 44f
-        FruitNinjaItemType.BANANA -> 56f
-        FruitNinjaItemType.PINEAPPLE -> 58f
-        FruitNinjaItemType.WATERMELON -> 60f
-        FruitNinjaItemType.COCONUT -> 52f
-        FruitNinjaItemType.APPLE,
-        FruitNinjaItemType.ORANGE -> 50f
-    }
+private fun getItemRadius(type: FruitNinjaItemType): Float = when (type) {
+    FruitNinjaItemType.IPN_CARD -> 55f
+    FruitNinjaItemType.CAFE_TACHADO -> 45f
+    else -> 50f
 }

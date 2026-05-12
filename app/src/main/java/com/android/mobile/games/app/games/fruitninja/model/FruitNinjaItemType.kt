@@ -3,31 +3,20 @@ package com.android.mobile.games.app.games.fruitninja.model
 import androidx.compose.ui.graphics.Color
 
 enum class FruitNinjaItemType {
-    APPLE,
-    BANANA,
-    WATERMELON,
-    ORANGE,
-    PINEAPPLE,
-    COCONUT,
-    BOMB
+    BUG, ERROR, NULO, IPN_CARD, CAFE_TACHADO
 }
 
-fun FruitNinjaItemType.isBomb(): Boolean {
-    return this == FruitNinjaItemType.BOMB
-}
+fun FruitNinjaItemType.isPenalty(): Boolean = this == FruitNinjaItemType.CAFE_TACHADO
+fun FruitNinjaItemType.isBonus(): Boolean = this == FruitNinjaItemType.IPN_CARD
 
-fun FruitNinjaItemType.isFruit(): Boolean {
-    return this != FruitNinjaItemType.BOMB
-}
+// se mantiene estas para que el motor siga funcionando sin errores
+fun FruitNinjaItemType.isBomb(): Boolean = isPenalty()
+fun FruitNinjaItemType.isFruit(): Boolean = !isPenalty()
 
-fun FruitNinjaItemType.color(): Color {
-    return when (this) {
-        FruitNinjaItemType.APPLE -> Color.Red
-        FruitNinjaItemType.BANANA -> Color.Yellow
-        FruitNinjaItemType.WATERMELON -> Color.Green
-        FruitNinjaItemType.ORANGE -> Color(0xFFFF9800)
-        FruitNinjaItemType.PINEAPPLE -> Color(0xFFFFD54F)
-        FruitNinjaItemType.COCONUT -> Color(0xFF8D6E63)
-        FruitNinjaItemType.BOMB -> Color.DarkGray
-    }
+fun FruitNinjaItemType.color(): Color = when (this) {
+    FruitNinjaItemType.BUG -> Color(0xFF8BC34A)
+    FruitNinjaItemType.ERROR -> Color(0xFFF44336)
+    FruitNinjaItemType.NULO -> Color(0xFF9E9E9E)
+    FruitNinjaItemType.IPN_CARD -> Color(0xFF2196F3)
+    FruitNinjaItemType.CAFE_TACHADO -> Color(0xFF795548)
 }

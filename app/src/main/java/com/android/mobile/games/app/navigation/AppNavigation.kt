@@ -55,11 +55,11 @@ fun AppNavigation() {
 
             val difficultyName = backStackEntry.arguments
                 ?.getString(DIFFICULTY_ARGUMENT)
-                ?: FruitNinjaDifficulty.EASY.name
+                ?: FruitNinjaDifficulty.CLASSIC.name
 
             val difficulty = runCatching {
                 FruitNinjaDifficulty.valueOf(difficultyName)
-            }.getOrDefault(FruitNinjaDifficulty.EASY)
+            }.getOrDefault(FruitNinjaDifficulty.CLASSIC)
 
             FruitNinjaScreen(
                 difficulty = difficulty,

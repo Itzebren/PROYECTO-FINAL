@@ -6,8 +6,10 @@ import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaEffect
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaEffectType
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaGameState
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaItem
+import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaItemType
 import com.android.mobile.games.app.games.fruitninja.model.isBomb
 import com.android.mobile.games.app.games.fruitninja.model.isFruit
+import com.android.mobile.games.app.games.fruitninja.model.isPenalty
 import com.android.mobile.games.app.games.fruitninja.util.createRandomFruitNinjaItem
 import com.android.mobile.games.app.games.fruitninja.util.isPointInsideItem
 
@@ -98,61 +100,39 @@ class FruitNinjaGameEngine(
         )
     }
 
-    fun sliceAt(
-        state: FruitNinjaGameState,
-        touchPoint: Offset
-    ): FruitNinjaGameState {
-        if (!state.isRunning || state.isPaused || state.isGameOver) {
-            return state
-        }
+    fun sliceAt(state: FruitNinjaGameState, touchPoint: Offset): FruitNinjaGameState {
+        if (!state.isRunning || state.isPaused || state.isGameOver) return state
 
-        val touchedItems = state.items.filter { item ->
-            isPointInsideItem(
-                point = touchPoint,
-                item = item
-            )
-        }
+        val touchedItems = state.items.filter { isPointInsideItem(touchPoint, it) }
+        if (touchedItems.isEmpty()) return state
 
-        if (touchedItems.isEmpty()) {
-            return state
-        }
+        var newLives = state.lives
+        var newTime = state.timeRemainingSeconds
+        var isGameOver = state.isGameOver
+        var newScore = state.score
 
-        val bombItems = touchedItems.filter { item ->
-            item.type.isBomb()
-        }
-
-        if (bombItems.isNotEmpty()) {
-            val explosionEffects = bombItems.map { item ->
-                createExplosionEffect(item)
+        touchedItems.forEach { item ->
+            if (item.type.isPenalty()) {
+                if (state.difficulty == FruitNinjaDifficulty.CLASSIC) isGameOver = true
+                else newLives = (newLives - 1).coerceAtLeast(0)
+            } else {
+                newScore += state.difficulty.pointsPerItem
+                if (item.type == FruitNinjaItemType.IPN_CARD) {
+                    newTime += 5 // Bonus +5 segundos
+                }
             }
-
-            return state.copy(
-                effects = state.effects + explosionEffects,
-                lives = 0,
-                isGameOver = true
-            )
         }
 
-        val slicedFruits = touchedItems.filter { item ->
-            item.type.isFruit()
-        }
-
-        val slicedItemIds = slicedFruits.map { item ->
-            item.id
-        }.toSet()
-
-        val remainingItems = state.items.filterNot { item ->
-            item.id in slicedItemIds
-        }
-
-        val sliceEffects = slicedFruits.flatMap { item ->
-            createSliceEffects(item)
-        }
+        val remainingItems = state.items.filterNot { it in touchedItems }
+        val sliceEffects = touchedItems.flatMap { createSliceEffects(it) }
 
         return state.copy(
             items = remainingItems,
             effects = state.effects + sliceEffects,
-            score = state.score + slicedFruits.size * difficulty.pointsPerFruit
+            score = newScore,
+            lives = newLives,
+            timeRemainingSeconds = newTime,
+            isGameOver = isGameOver || (newLives <= 0 && state.difficulty.hasLives)
         )
     }
 

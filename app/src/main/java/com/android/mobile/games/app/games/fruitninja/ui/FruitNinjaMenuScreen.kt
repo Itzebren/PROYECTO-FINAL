@@ -27,7 +27,7 @@ fun FruitNinjaMenuScreen(
     onBackClick: () -> Unit
 ) {
     var selectedDifficulty by remember {
-        mutableStateOf(FruitNinjaDifficulty.EASY)
+        mutableStateOf(FruitNinjaDifficulty.CLASSIC)
     }
 
     Column(
@@ -38,19 +38,19 @@ fun FruitNinjaMenuScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Fruit Ninja",
+            text = "Code Slasher",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = "Slice fruits, avoid bombs, and get the best score in 60 seconds.",
+            text = "¡Compila el código, elimina los bugs y salva el semestre!",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 12.dp, bottom = 28.dp)
         )
 
         Text(
-            text = "Select difficulty",
+            text = "Elije un modo de juego",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -71,7 +71,7 @@ fun FruitNinjaMenuScreen(
                 .fillMaxWidth()
                 .padding(top = 28.dp)
         ) {
-            Text(text = "Start game")
+            Text(text = "Comenzar")
         }
 
         OutlinedButton(
@@ -80,7 +80,7 @@ fun FruitNinjaMenuScreen(
                 .fillMaxWidth()
                 .padding(top = 12.dp)
         ) {
-            Text(text = "Back to main menu")
+            Text(text = "Menú inicial")
         }
     }
 }
