@@ -1,24 +1,22 @@
 package com.android.mobile.games.app.games.fruitninja.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 
 @Composable
@@ -26,85 +24,111 @@ fun FruitNinjaMenuScreen(
     onStartGameClick: (FruitNinjaDifficulty) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var selectedDifficulty by remember {
-        mutableStateOf(FruitNinjaDifficulty.CLASSIC)
-    }
+    // Estado para saber qué modo está seleccionado y si el modal de ayuda está abierto
+    var selectedDifficulty by remember { mutableStateOf(FruitNinjaDifficulty.SAVE_SEMESTER) }
+    var showHelpModal by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Code Slasher",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 1. FONDO DE PORTADA
+        Image(
+            painter = painterResource(id = R.drawable.portada_slash),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
-        Text(
-            text = "¡Compila el código, elimina los bugs y salva el semestre!",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 12.dp, bottom = 28.dp)
-        )
-
-        Text(
-            text = "Elije un modo de juego",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        DifficultySelector(
-            selectedDifficulty = selectedDifficulty,
-            onDifficultySelected = { difficulty ->
-                selectedDifficulty = difficulty
-            }
-        )
-
-        Button(
-            onClick = {
-                onStartGameClick(selectedDifficulty)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 28.dp)
+        // 2. BOTÓN DE AYUDA "?" (Esquina superior derecha)
+        IconButton(
+            onClick = { showHelpModal = true },
+            modifier = Modifier.align(Alignment.TopEnd).padding(24.dp).size(48.dp)
         ) {
-            Text(text = "Comenzar")
+            Surface(
+                shape = RoundedCornerShape(50),
+                color = Color(0xFFD100FF)
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Text("?", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                }
+            }
         }
 
-        OutlinedButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
+        // 3. CONTENIDO PRINCIPAL (Abajo)
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Menú inicial")
+            // Selector de Modos (Botones lila)
+            ModeSelectorRow(
+                selected = selectedDifficulty,
+                onSelected = { selectedDifficulty = it }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón de Inicio brillante
+            Button(
+                onClick = { onStartGameClick(selectedDifficulty) },
+                modifier = Modifier.fillMaxWidth(0.8f).height(64.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD100FF)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "[ ¡A COMPILAR! ]",
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            TextButton(onClick = onBackClick) {
+                Text("Cerrar Lab", color = Color.White.copy(alpha = 0.7f))
+            }
+        }
+
+        // 4. MODAL DE AYUDA (Se muestra al presionar "?")
+        if (showHelpModal) {
+            AlertDialog(
+                onDismissRequest = { showHelpModal = false },
+                containerColor = Color(0xFF1A1A2E),
+                title = { Text("MISIÓN: CÓDIGO LIMPIO", color = Color(0xFFD100FF), fontFamily = FontFamily.Monospace) },
+                text = {
+                    Column {
+                        Text("OBJETIVO: Elimina los BUGS y ERRORES antes de la entrega.", color = Color.White)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text("• COMBO: Corta 3+ ítems.", color = Color.White.copy(0.7f), fontSize = 12.sp)
+                        Text("• IPN CARD: +5 segundos.", color = Color.White.copy(0.7f), fontSize = 12.sp)
+                        Text("• CAFÉ TACHADO: ¡Cuidado! Quita vidas.", color = Color.White.copy(0.7f), fontSize = 12.sp)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showHelpModal = false }) {
+                        Text("ENTENDIDO", color = Color(0xFFD100FF))
+                    }
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun DifficultySelector(
-    selectedDifficulty: FruitNinjaDifficulty,
-    onDifficultySelected: (FruitNinjaDifficulty) -> Unit
+private fun ModeSelectorRow(
+    selected: FruitNinjaDifficulty,
+    onSelected: (FruitNinjaDifficulty) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        FruitNinjaDifficulty.entries.forEach { difficulty ->
+        FruitNinjaDifficulty.entries.forEach { mode ->
             FilterChip(
-                selected = selectedDifficulty == difficulty,
-                onClick = {
-                    onDifficultySelected(difficulty)
-                },
-                label = {
-                    Text(text = difficulty.label)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
+                selected = selected == mode,
+                onClick = { onSelected(mode) },
+                label = { Text(mode.label, fontSize = 11.sp) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = Color(0xFFD100FF),
+                    labelColor = Color.White,
+                    selectedLabelColor = Color.White
+                )
             )
         }
     }

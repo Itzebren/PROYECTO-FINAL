@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
@@ -228,12 +229,25 @@ private fun DrawScope.drawSlashTrail(
 ) {
     if (points.size <= 1) return
 
+    // Capa de brillo Lila Neón:)))
+    for (index in 0 until points.lastIndex) {
+        drawLine(
+            color = Color(0xFFD100FF).copy(alpha = 0.5f), // Lila Neón transparente
+            start = points[index],
+            end = points[index + 1],
+            strokeWidth = 22f, // Más gruesa para el brillooo
+            cap = StrokeCap.Round
+        )
+    }
+
+    // Capa central (Blanco/Lila claro)
     for (index in 0 until points.lastIndex) {
         drawLine(
             color = Color.White,
             start = points[index],
             end = points[index + 1],
-            strokeWidth = 10f
+            strokeWidth = 8f,
+            cap = StrokeCap.Round
         )
     }
 }
