@@ -62,12 +62,19 @@ class FruitNinjaGameEngine(
             screenHeight = screenHeight
         )
 
+        // 1. Corrigiendo aqui se calcula cuántos ítems se cayeron----- acuerdateee
         val missedFruits = countMissedFruits(
             items = movedItems,
             screenHeight = screenHeight
         )
 
-        val updatedLives = (state.lives - missedFruits).coerceAtLeast(0)
+        // 2. CORRECCIÓN PARA MODO RELAX:
+        // Solo restamos vidas si la dificultad TIENE vidas (hasLives == true)
+        val updatedLives = if (difficulty.hasLives) {
+            (state.lives - missedFruits).coerceAtLeast(0)
+        } else {
+            state.lives // En Relax, las vidas se mantienen intactas
+        }
 
         val itemsWithSpawn = spawnItemIfNeeded(
             items = visibleItems,
@@ -81,7 +88,8 @@ class FruitNinjaGameEngine(
             items = itemsWithSpawn,
             effects = updatedEffects,
             lives = updatedLives,
-            isGameOver = updatedLives <= 0
+            // Solo es Game Over por vidas si el modo las usa
+            isGameOver = (difficulty.hasLives && updatedLives <= 0)
         )
     }
 
@@ -132,6 +140,7 @@ class FruitNinjaGameEngine(
             score = newScore,
             lives = newLives,
             timeRemainingSeconds = newTime,
+            // Par que solo termine si se acaban las vidas cuando el modo no es relax
             isGameOver = isGameOver || (newLives <= 0 && state.difficulty.hasLives)
         )
     }

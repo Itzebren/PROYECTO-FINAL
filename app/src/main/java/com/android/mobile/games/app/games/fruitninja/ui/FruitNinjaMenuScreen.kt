@@ -1,6 +1,8 @@
 package com.android.mobile.games.app.games.fruitninja.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -24,7 +26,6 @@ fun FruitNinjaMenuScreen(
     onStartGameClick: (FruitNinjaDifficulty) -> Unit,
     onBackClick: () -> Unit
 ) {
-    // Estado para saber qué modo está seleccionado y si el modal de ayuda está abierto
     var selectedDifficulty by remember { mutableStateOf(FruitNinjaDifficulty.SAVE_SEMESTER) }
     var showHelpModal by remember { mutableStateOf(false) }
 
@@ -37,55 +38,79 @@ fun FruitNinjaMenuScreen(
             contentScale = ContentScale.Crop
         )
 
-        // 2. BOTÓN DE AYUDA "?" (Esquina superior derecha)
+        // 2. BOTÓN DE AYUDA "?"
         IconButton(
             onClick = { showHelpModal = true },
-            modifier = Modifier.align(Alignment.TopEnd).padding(24.dp).size(48.dp)
+            modifier = Modifier.align(Alignment.TopEnd).padding(24.dp).size(56.dp)
         ) {
             Surface(
                 shape = RoundedCornerShape(50),
-                color = Color(0xFFD100FF)
+                color = Color(0xFFD100FF),
+                border = BorderStroke(2.dp, Color.White) // Añadimos borde blanco para que resalte
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text("?", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("?", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
-        // 3. CONTENIDO PRINCIPAL (Abajo)
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // 3. PANEL DE CONTROL (Con fondo protector para mejorar contraste)
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            color = Color.Black.copy(alpha = 0.4f) // Capa oscura sutil detrás de los botones
         ) {
-            // Selector de Modos (Botones lila)
-            ModeSelectorRow(
-                selected = selectedDifficulty,
-                onSelected = { selectedDifficulty = it }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Botón de Inicio brillante
-            Button(
-                onClick = { onStartGameClick(selectedDifficulty) },
-                modifier = Modifier.fillMaxWidth(0.8f).height(64.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD100FF)),
-                shape = RoundedCornerShape(8.dp)
+            Column(
+                modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "[ ¡A COMPILAR! ]",
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold
+                // Selector de Modos Mejorado
+                ModeSelectorRow(
+                    selected = selectedDifficulty,
+                    onSelected = { selectedDifficulty = it }
                 )
-            }
 
-            TextButton(onClick = onBackClick) {
-                Text("Cerrar Lab", color = Color.White.copy(alpha = 0.7f))
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Botón Principal "[ ¡A COMPILAR! ]"
+                Button(
+                    onClick = { onStartGameClick(selectedDifficulty) },
+                    modifier = Modifier.fillMaxWidth(0.85f).height(64.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD100FF)),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+                ) {
+                    Text(
+                        text = "[ ¡A COMPILAR! ]",
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // BOTÓN CERRAR LAB (Ahora mucho más visible)
+                OutlinedButton(
+                    onClick = onBackClick,
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        "CERRAR LABORATORIO",
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
-        // 4. MODAL DE AYUDA (Se muestra al presionar "?")
+        // 4. MODAL DE AYUDA (Se mantiene igual)
         if (showHelpModal) {
             AlertDialog(
                 onDismissRequest = { showHelpModal = false },
@@ -116,18 +141,35 @@ private fun ModeSelectorRow(
     onSelected: (FruitNinjaDifficulty) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         FruitNinjaDifficulty.entries.forEach { mode ->
+            val isSelected = selected == mode
             FilterChip(
-                selected = selected == mode,
+                selected = isSelected,
                 onClick = { onSelected(mode) },
-                label = { Text(mode.label, fontSize = 11.sp) },
+                label = {
+                    Text(
+                        mode.label,
+                        fontSize = 13.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                    )
+                },
                 colors = FilterChipDefaults.filterChipColors(
+                    // Seleccionado: Lila brillante
                     selectedContainerColor = Color(0xFFD100FF),
-                    labelColor = Color.White,
-                    selectedLabelColor = Color.White
+                    selectedLabelColor = Color.White,
+                    // No seleccionado: Fondo oscuro sólido para que no se transparente el fondo
+                    containerColor = Color(0xFF2D2D44),
+                    labelColor = Color.White.copy(alpha = 0.8f)
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isSelected,
+                    borderColor = Color.White.copy(alpha = 0.3f),
+                    selectedBorderColor = Color.White,
+                    borderWidth = 1.dp
                 )
             )
         }
