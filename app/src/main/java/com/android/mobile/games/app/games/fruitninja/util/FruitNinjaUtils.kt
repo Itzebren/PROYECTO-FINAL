@@ -17,11 +17,26 @@ fun createRandomFruitNinjaItem(
     val type = createRandomItemType(difficulty)
     val radius = getItemRadius(type)
 
-    val startX = Random.nextFloat() * screenWidth
+    // 1. MARGEN DE SEGURIDAD
+    // Evitamos que el ítem aparezca en los bordes extremos (izquierdo o derecho)
+    val margin = radius * 2
+    val usableWidth = screenWidth - (margin * 2)
+    val startX = (Random.nextFloat() * usableWidth) + margin
+
+    // El ítem nace justo debajo del borde inferior de la pantalla
     val startY = screenHeight + radius
 
-    val velocityX = Random.nextFloat() * 8f - 4f
-    val baseVelocityY = -(Random.nextFloat() * 16f + 18f)
+    // 2. VELOCIDAD HORIZONTAL INTELIGENTE
+    // Si el ítem nace en la mitad izquierda, le damos velocidad hacia la DERECHA
+    // Si nace en la mitad derecha, le damos velocidad hacia la IZQUIERDA
+    val centerScreen = screenWidth / 2
+    val forceTowardsCenter = if (startX < centerScreen) 3f else -3f
+
+    // Le sumamos un poco de aleatoriedad para que las trayectorias varíen
+    val velocityX = forceTowardsCenter + (Random.nextFloat() * 2f - 1f)
+
+    // 3. VELOCIDAD VERTICAL (Hacia arriba)
+    val baseVelocityY = -(Random.nextFloat() * 14f + 16f)
     val velocityY = baseVelocityY * difficulty.initialSpeedMultiplier
 
     return FruitNinjaItem(
@@ -58,7 +73,7 @@ private fun createRandomItemType(difficulty: FruitNinjaDifficulty): FruitNinjaIt
 }
 
 private fun getItemRadius(type: FruitNinjaItemType): Float = when (type) {
-    FruitNinjaItemType.IPN_CARD -> 55f
-    FruitNinjaItemType.CAFE_TACHADO -> 45f
-    else -> 50f
+    FruitNinjaItemType.IPN_CARD -> 85f
+    FruitNinjaItemType.CAFE_TACHADO -> 75f
+    else -> 80f
 }

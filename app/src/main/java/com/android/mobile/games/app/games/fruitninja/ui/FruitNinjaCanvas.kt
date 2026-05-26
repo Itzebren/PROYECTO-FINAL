@@ -176,7 +176,7 @@ private fun DrawScope.drawFruitNinjaItem(
     item: FruitNinjaItem,
     image: ImageBitmap
 ) {
-    val imageSize = (item.radius * 2.8f).roundToInt()
+    val imageSize = (item.radius * 3.0f).roundToInt()
 
     drawCenteredImage(
         image = image,

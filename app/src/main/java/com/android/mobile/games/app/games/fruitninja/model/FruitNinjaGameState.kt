@@ -19,5 +19,9 @@ data class FruitNinjaGameState(
 
     val isPaused: Boolean = false,
 
-    val isGameOver: Boolean = false
+    val isGameOver: Boolean = false,
+
+    val bugsEliminated: Int = 0,
+
+    val maxCombo: Int = 0
 )

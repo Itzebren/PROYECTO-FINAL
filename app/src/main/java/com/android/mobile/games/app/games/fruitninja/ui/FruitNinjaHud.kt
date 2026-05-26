@@ -18,13 +18,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.android.mobile.games.app.R // Asegúrate de que esta línea esté
+import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 
 @Composable
 fun FruitNinjaHud(
     score: Int,
-    bestScore: Int, // <--- AÑADIDO AQUÍ
+    bestScore: Int,
     lives: Int,
     timeRemainingSeconds: Int,
     difficulty: FruitNinjaDifficulty,
@@ -45,8 +45,11 @@ fun FruitNinjaHud(
             .statusBarsPadding()
             .padding(16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(text = "PUNTAJE: ${score.toString().padStart(6, '0')}", style = pixelStyle)
                 Text(
                     text = "RECORD: ${bestScore.toString().padStart(6, '0')}",
@@ -55,17 +58,18 @@ fun FruitNinjaHud(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Vasos de Café
+            // Vasos de Café (Vidas)
             if (difficulty.hasLives) {
-                Row {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     repeat(3) { i ->
                         Image(
                             painter = painterResource(if (i < lives) R.drawable.cafe_con_vida else R.drawable.cafe_menos_vida),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(35.dp) // <--- Aquí no debe haber error ahora
+                                .size(50.dp) // <--- Tamaño equilibrado para que quepan los 3
                                 .padding(horizontal = 2.dp)
                         )
                     }
@@ -74,66 +78,7 @@ fun FruitNinjaHud(
         }
 
         if (difficulty.hasTimer) {
-            Spacer(modifier = Modifier.height(8.dp))
-            LinearProgressIndicator(
-                progress = { timeRemainingSeconds / 60f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = Color(0xFFFF00FF), // Rosa neón
-                trackColor = Color.White.copy(alpha = 0.2f)
-            )
-        }
-    }
-}
-
-
-@Composable
-fun FruitNinjaHud(
-    score: Int,
-    lives: Int,
-    timeRemainingSeconds: Int,
-    difficulty: FruitNinjaDifficulty,
-    modifier: Modifier = Modifier
-) {
-    val pixelStyle = TextStyle(
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        color = Color.White,
-        shadow = Shadow(color = Color(0xFFD100FF), blurRadius = 8f)
-    )
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color(0xFF6A1B9A).copy(alpha = 0.7f)) // Lila Code Slasher
-            .statusBarsPadding()
-            .padding(16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "PUNTAJE: ${score.toString().padStart(6, '0')}", style = pixelStyle)
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Vasos de Café
-            if (difficulty.hasLives) {
-                Row {
-                    repeat(3) { i ->
-                        Image(
-                            painter = painterResource(if (i < lives) R.drawable.cafe_con_vida else R.drawable.cafe_menos_vida),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(30.dp)
-                                .padding(horizontal = 2.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        if (difficulty.hasTimer) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             LinearProgressIndicator(
                 progress = { timeRemainingSeconds / 60f },
                 modifier = Modifier

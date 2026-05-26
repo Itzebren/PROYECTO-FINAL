@@ -56,3 +56,7 @@ Asegúrate de que el código sea modular para que el cambio a un RetrofitGameSer
 Mantén la configuración limpia para facilitar la posterior dockerización del entorno de desarrollo.
 
 ¿Puedes empezar analizando mi archivo GameViewModel.kt y GameCanvas.kt para ver cómo integramos estos cambios?
+
+Ahora una vez hecho eso necesito que comencemos con al backend, se realizara utilizando Fast-Api, mysql y lo que tenemos ya preparado para
+
+realizar el backend a partir de la tiene Persistencia Local con un Servicio Mockeado.

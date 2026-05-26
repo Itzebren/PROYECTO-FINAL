@@ -118,13 +118,18 @@ class FruitNinjaGameEngine(
         var newTime = state.timeRemainingSeconds
         var isGameOver = state.isGameOver
         var newScore = state.score
+        var newBugsEliminated = state.bugsEliminated
 
         touchedItems.forEach { item ->
             if (item.type.isPenalty()) {
-                if (state.difficulty == FruitNinjaDifficulty.CLASSIC) isGameOver = true
+                if (state.difficulty == FruitNinjaDifficulty.CLASSIC ||
+                    state.difficulty == FruitNinjaDifficulty.SAVE_SEMESTER) isGameOver = true
                 else newLives = (newLives - 1).coerceAtLeast(0)
             } else {
                 newScore += state.difficulty.pointsPerItem
+                if (item.type != FruitNinjaItemType.IPN_CARD) {
+                    newBugsEliminated++
+                }
                 if (item.type == FruitNinjaItemType.IPN_CARD) {
                     newTime += 5 // Bonus +5 segundos
                 }
@@ -140,6 +145,7 @@ class FruitNinjaGameEngine(
             score = newScore,
             lives = newLives,
             timeRemainingSeconds = newTime,
+            bugsEliminated = newBugsEliminated,
             // Par que solo termine si se acaban las vidas cuando el modo no es relax
             isGameOver = isGameOver || (newLives <= 0 && state.difficulty.hasLives)
         )
@@ -303,3 +309,4 @@ class FruitNinjaGameEngine(
         )
     }
 }
+

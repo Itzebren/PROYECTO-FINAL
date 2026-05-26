@@ -17,3 +17,6 @@ CodeSlasherPrompt.txt
 .idea/inspectionProfiles/
 .idea/inspectionProfiles/Project_Default.xml
 .idea/
+.env
+**/ .env
+backend/.env

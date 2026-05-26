@@ -12,6 +12,7 @@ import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaScreen
 import com.android.mobile.games.app.ui.screens.MainMenuScreen
 
 private const val DIFFICULTY_ARGUMENT = "difficulty"
+private const val USERNAME_ARGUMENT = "username"
 
 @Composable
 fun AppNavigation() {
@@ -31,10 +32,11 @@ fun AppNavigation() {
 
         composable(AppRoute.FruitNinjaMenu.route) {
             FruitNinjaMenuScreen(
-                onStartGameClick = { difficulty ->
+                onStartGameClick = { difficulty, username ->
                     navController.navigate(
                         AppRoute.FruitNinjaGame.createRoute(
-                            difficulty = difficulty.name
+                            difficulty = difficulty.name,
+                            username = username
                         )
                     )
                 },
@@ -49,6 +51,9 @@ fun AppNavigation() {
             arguments = listOf(
                 navArgument(DIFFICULTY_ARGUMENT) {
                     type = NavType.StringType
+                },
+                navArgument(USERNAME_ARGUMENT) {
+                    type = NavType.StringType
                 }
             )
         ) { backStackEntry ->
@@ -57,16 +62,30 @@ fun AppNavigation() {
                 ?.getString(DIFFICULTY_ARGUMENT)
                 ?: FruitNinjaDifficulty.CLASSIC.name
 
+            val username = backStackEntry.arguments
+                ?.getString(USERNAME_ARGUMENT)
+                ?: "Anonymous"
+
             val difficulty = runCatching {
                 FruitNinjaDifficulty.valueOf(difficultyName)
             }.getOrDefault(FruitNinjaDifficulty.CLASSIC)
 
             FruitNinjaScreen(
                 difficulty = difficulty,
+                username = username,
                 onBackToMenuClick = {
                     navController.popBackStack()
                 }
             )
         }
     }
+}
+
+@Composable
+fun FruitNinjaScreen(
+    difficulty: FruitNinjaDifficulty,
+    username: String,
+    onBackToMenuClick: () -> Boolean
+) {
+    TODO("Not yet implemented")
 }
