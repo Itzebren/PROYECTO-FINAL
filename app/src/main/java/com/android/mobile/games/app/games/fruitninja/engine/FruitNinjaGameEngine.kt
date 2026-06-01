@@ -84,12 +84,14 @@ class FruitNinjaGameEngine(
 
         val updatedEffects = updateEffects(state.effects)
 
+        val isGameOverByLives = difficulty.hasLives && updatedLives <= 0
+        val isGameOverByTime = difficulty.hasTimer && state.timeRemainingSeconds <= 0
+
         return state.copy(
             items = itemsWithSpawn,
             effects = updatedEffects,
             lives = updatedLives,
-            // Solo es Game Over por vidas si el modo las usa
-            isGameOver = (difficulty.hasLives && updatedLives <= 0)
+            isGameOver = isGameOverByLives || isGameOverByTime
         )
     }
 
@@ -101,10 +103,13 @@ class FruitNinjaGameEngine(
         }
 
         val updatedTime = (state.timeRemainingSeconds - 1).coerceAtLeast(0)
+        
+        val isGameOverByTime = difficulty.hasTimer && updatedTime <= 0
+        val isGameOverByLives = difficulty.hasLives && state.lives <= 0
 
         return state.copy(
             timeRemainingSeconds = updatedTime,
-            isGameOver = updatedTime <= 0
+            isGameOver = isGameOverByTime || isGameOverByLives
         )
     }
 

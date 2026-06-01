@@ -62,14 +62,25 @@ fun FruitNinjaScreen(
     LaunchedEffect(
         screenWidth,
         screenHeight,
-        gameState.isGameOver,
-        difficulty
+        difficulty,
+        gameState.isGameOver
     ) {
+        var lastTimerUpdate = System.currentTimeMillis()
+        
         while (
             screenWidth > 0f &&
             screenHeight > 0f &&
             !gameState.isGameOver
         ) {
+            val currentTime = System.currentTimeMillis()
+            
+            // Actualizar timer cada segundo si el modo lo requiere
+            if (difficulty.hasTimer && currentTime - lastTimerUpdate >= 1000L) {
+                gameState = gameEngine.updateTimer(state = gameState)
+                lastTimerUpdate = currentTime
+            }
+
+            // Actualizar frames (movimiento, etc.)
             gameState = gameEngine.updateFrame(
                 state = gameState,
                 screenWidth = screenWidth,
@@ -77,19 +88,6 @@ fun FruitNinjaScreen(
             )
 
             delay(16L)
-        }
-    }
-
-    LaunchedEffect(
-        gameState.isGameOver,
-        difficulty
-    ) {
-        while (!gameState.isGameOver) {
-            delay(1_000L)
-
-            gameState = gameEngine.updateTimer(
-                state = gameState
-            )
         }
     }
 
