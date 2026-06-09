@@ -1,4 +1,4 @@
-﻿package com.android.mobile.games.app.ui.screens
+package com.android.mobile.games.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainMenuScreen(
+    onCodeSlasherClick: () -> Unit,
     onCatchGameClick: () -> Unit,
     onRunnerGameClick: () -> Unit,
     onFruitMergeClick: () -> Unit
@@ -42,6 +43,12 @@ fun MainMenuScreen(
         )
 
         GameMenuButton(
+            title = "Code Slasher",
+            description = "Corta código y elimina bugs.",
+            onClick = onCodeSlasherClick
+        )
+
+        GameMenuButton(
             title = "Catch Game",
             description = "Atrapa objetos que caen del cielo.",
             onClick = onCatchGameClick
@@ -49,13 +56,13 @@ fun MainMenuScreen(
 
         GameMenuButton(
             title = "Runner Game",
-            description = "Salta obstÃ¡culos al estilo dinosaurio.",
+            description = "Salta obstáculos al estilo dinosaurio.",
             onClick = onRunnerGameClick
         )
 
         GameMenuButton(
             title = "Fruit Merge",
-            description = "Combina frutas iguales para crear frutas mÃ¡s grandes.",
+            description = "Combina frutas iguales para crear frutas más grandes.",
             onClick = onFruitMergeClick
         )
     }
