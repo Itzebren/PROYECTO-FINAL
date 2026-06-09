@@ -1,0 +1,14 @@
+﻿package com.android.mobile.games.app.navigation
+
+sealed class AppRoute(val route: String) {
+
+    data object MainMenu : AppRoute("main_menu")
+
+    data object CatchGameMenu : AppRoute("catch_game_menu")
+
+    data object CatchGame : AppRoute("catch_game")
+
+    data object RunnerGame : AppRoute("runner_game")
+
+    data object FruitMergeGame : AppRoute("fruit_merge_game")
+}
