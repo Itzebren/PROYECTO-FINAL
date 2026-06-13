@@ -9,8 +9,9 @@ import kotlin.random.Random
 private const val INITIAL_SPEED_RATIO = 0.62f
 private const val MAX_SPEED_RATIO = 1.05f
 private const val SPEED_GAIN_RATIO = 0.011f
-private const val GRAVITY_RATIO = 2.45f
-private const val JUMP_FORCE_RATIO = -1.18f
+private const val GRAVITY_RATIO = 3.6f
+private const val JUMP_FORCE_RATIO = -1.75f
+private const val DOUBLE_JUMP_FORCE_RATIO = -1.6f
 private const val MIN_SPAWN_SECONDS = 1.04f
 private const val MAX_SPAWN_SECONDS = 1.72f
 
@@ -124,13 +125,22 @@ class RunnerGameEngine {
     }
 
     fun jump(state: RunnerGameState, height: Float): RunnerGameState {
-        if (state.isGameOver || state.isJumping) {
+        if (state.isGameOver) {
             return state
+        }
+
+        if (state.isJumping) {
+            if (state.hasDoubleJumped) return state
+            return state.copy(
+                playerVelocityY = height * DOUBLE_JUMP_FORCE_RATIO,
+                hasDoubleJumped = true
+            )
         }
 
         return state.copy(
             playerVelocityY = height * JUMP_FORCE_RATIO,
             isJumping = true,
+            hasDoubleJumped = false,
             isDucking = false
         )
     }
@@ -147,11 +157,11 @@ class RunnerGameEngine {
     }
 
     fun getPlayerSize(width: Float): Float {
-        return (width * 0.155f).coerceIn(54f, 78f)
+        return (width * 0.45f).coerceIn(180f, 450f)
     }
 
     fun getGroundY(height: Float): Float {
-        return height * 0.74f
+        return height * 0.95f
     }
 
     private fun updatePlayer(
@@ -166,7 +176,8 @@ class RunnerGameEngine {
             state.copy(
                 playerY = state.groundY,
                 playerVelocityY = 0f,
-                isJumping = false
+                isJumping = false,
+                hasDoubleJumped = false
             )
         } else {
             state.copy(
@@ -271,16 +282,18 @@ class RunnerGameEngine {
         width: Float
     ): Boolean {
         val playerSize = getPlayerSize(width)
-        val playerLeft = state.playerX + playerSize * 0.16f
-        val playerRight = state.playerX + playerSize * 0.82f
-        val playerTop = state.playerY + playerSize * if (state.isDucking) 0.42f else 0.1f
-        val playerBottom = state.playerY + playerSize * 0.94f
+        // Hitbox del jugador más perdonable (25% al 75% del ancho de la imagen)
+        val playerLeft = state.playerX + playerSize * 0.25f
+        val playerRight = state.playerX + playerSize * 0.75f
+        val playerTop = state.playerY + playerSize * if (state.isDucking) 0.5f else 0.15f
+        val playerBottom = state.playerY + playerSize * 0.85f
 
         return state.obstacles.any { obstacle ->
-            val obstacleLeft = obstacle.x + obstacle.width * 0.12f
-            val obstacleRight = obstacle.x + obstacle.width * 0.88f
-            val obstacleTop = obstacle.y + obstacle.height * 0.06f
-            val obstacleBottom = obstacle.y + obstacle.height
+            // Hitbox del obstáculo un poco más indulgente
+            val obstacleLeft = obstacle.x + obstacle.width * 0.2f
+            val obstacleRight = obstacle.x + obstacle.width * 0.8f
+            val obstacleTop = obstacle.y + obstacle.height * 0.15f
+            val obstacleBottom = obstacle.y + obstacle.height * 0.95f
 
             obstacleRight > playerLeft &&
                     obstacleLeft < playerRight &&

@@ -78,6 +78,7 @@ fun MainMenuScreen(
         contentAlignment = Alignment.TopCenter
     ) {
         // Cute floating background canvas (Hearts and bubbles)
+        val heartPath = remember { Path() }
         Canvas(Modifier.fillMaxSize()) {
             floatItems.forEach { item ->
                 val yy = ((item.y - time * item.speed * 0.001f) % 1.0f + 1.0f) % 1.0f
@@ -87,6 +88,7 @@ fun MainMenuScreen(
 
                 if (item.isHeart) {
                     drawHeart(
+                        path = heartPath,
                         center = Offset(xx, yPos + bounce),
                         size = item.size * 1.5f,
                         color = item.color
@@ -141,8 +143,8 @@ fun MainMenuScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             GameMenuButton(
-                title = "🐛 Bug Catcher 🍦",
-                description = "¡Atrapa los bugs en tu tacita de café!",
+                title = "📜 The Last Dictamen ⚖️",
+                description = "¡Sobrevive las 18 semanas en la ESCOM recolectando café y útiles de ingeniería!",
                 color = CuteLavender,
                 onClick = onCatchGameClick
             )
@@ -172,21 +174,22 @@ fun MainMenuScreen(
 
 // Custom Draw Helper for Hearts on Canvas
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawHeart(
+    path: Path,
     center: Offset,
     size: Float,
     color: Color
 ) {
-    val path = Path().apply {
-        val width = size
-        val height = size
-        val x = center.x - width / 2
-        val y = center.y - height / 2
+    path.reset()
+    val width = size
+    val height = size
+    val x = center.x - width / 2
+    val y = center.y - height / 2
 
-        moveTo(x + width / 2, y + height / 5)
-        cubicTo(x + width * 5 / 6, y - height / 10, x + width * 5 / 4, y + height / 3, x + width / 2, y + height * 9 / 10)
-        cubicTo(x - width / 4, y + height / 3, x + width / 6, y - height / 10, x + width / 2, y + height / 5)
-        close()
-    }
+    path.moveTo(x + width / 2, y + height / 5)
+    path.cubicTo(x + width * 5 / 6, y - height / 10, x + width * 5 / 4, y + height / 3, x + width / 2, y + height * 9 / 10)
+    path.cubicTo(x - width / 4, y + height / 3, x + width / 6, y - height / 10, x + width / 2, y + height / 5)
+    path.close()
+
     drawPath(path = path, color = color)
 }
 

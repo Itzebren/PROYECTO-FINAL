@@ -30,7 +30,7 @@ fun CatchTriviaDialog(
         tonalElevation = 8.dp,
         title = {
             Text(
-                text = "📖 ¡ÚLTIMA OPORTUNIDAD! ✨",
+                text = "📝 ¡EXAMEN SORPRESA! 😱",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = TextDark
