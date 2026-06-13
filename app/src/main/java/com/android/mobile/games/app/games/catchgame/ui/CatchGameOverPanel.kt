@@ -32,14 +32,14 @@ fun CatchGameOverPanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "🍧 FIN DEL JUEGO 🍧",
+                text = "📚 SEMESTRE PERDIDO 📚",
                 color = TextDark,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 22.sp
             )
 
             Text(
-                text = "Puntaje: $score ⭐",
+                text = "Promedio: $score ⭐",
                 color = TextDark,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
@@ -65,7 +65,7 @@ fun CatchGameOverPanel(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text(text = "✨ ¡Reintentar! ✨", fontWeight = FontWeight.Bold)
+                Text(text = "✨ ¡Reinscripción! ✨", fontWeight = FontWeight.Bold)
             }
 
             OutlinedButton(
@@ -77,7 +77,7 @@ fun CatchGameOverPanel(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text(text = "Volver al Menú 🎀", fontWeight = FontWeight.Bold)
+                Text(text = "Ir a Dirección 🎓", fontWeight = FontWeight.Bold)
             }
         }
     }

@@ -22,6 +22,9 @@ import com.android.mobile.games.app.games.runner.data.RunnerScoreRepository
 import com.android.mobile.games.app.games.runner.engine.RunnerGameEngine
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
+import com.android.mobile.games.app.R
 
 @Composable
 fun RunnerScreen(
@@ -80,12 +83,17 @@ fun RunnerScreen(
         }
     }
 
+    val metroBackground = ImageBitmap.imageResource(id = R.drawable.metro)
+    val playerImage = ImageBitmap.imageResource(id = R.drawable.personaje)
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         RunnerCanvas(
             gameState = gameState,
             gameEngine = gameEngine,
+            backgroundImage = metroBackground,
+            playerImage = playerImage,
             onCanvasSizeChanged = { width, height ->
                 canvasWidth = width
                 canvasHeight = height

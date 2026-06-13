@@ -10,8 +10,8 @@ enum class CatchGameDifficulty(
 ) {
 
     EASY(
-        label = "Easy",
-        description = "More food, fewer hazards.",
+        label = "1er Semestre",
+        description = "Pocas tareas, más café.",
         spawnIntervalMs = 900L,
         badObjectProbability = 0.24f,
         minFallSpeedHeightRatio = 0.32f,
@@ -19,8 +19,8 @@ enum class CatchGameDifficulty(
     ),
 
     MEDIUM(
-        label = "Medium",
-        description = "Balanced speed and danger.",
+        label = "Medio Semestre",
+        description = "Más reportes y menos tiempo.",
         spawnIntervalMs = 700L,
         badObjectProbability = 0.42f,
         minFallSpeedHeightRatio = 0.39f,
@@ -28,8 +28,8 @@ enum class CatchGameDifficulty(
     ),
 
     HARD(
-        label = "Hard",
-        description = "Fast drops and more hazards.",
+        label = "Semestre Final",
+        description = "Lluvia de ETS y departamentales.",
         spawnIntervalMs = 520L,
         badObjectProbability = 0.60f,
         minFallSpeedHeightRatio = 0.48f,

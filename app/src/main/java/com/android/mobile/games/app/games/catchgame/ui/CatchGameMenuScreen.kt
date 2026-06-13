@@ -70,7 +70,7 @@ fun CatchGameMenuScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "🐛 BUG CATCHER 🍦",
+                        text = "📜 THE LAST DICTAMEN ⚖️",
                         color = TextDark,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
@@ -79,7 +79,7 @@ fun CatchGameMenuScreen(
                     )
 
                     Text(
-                        text = "Elige tu dificultad para atrapar bugs",
+                        text = "Elige tu nivel de sufrimiento académico",
                         color = TextDark.copy(alpha = 0.7f),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
@@ -129,7 +129,7 @@ fun CatchGameMenuScreen(
                             .height(52.dp),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                     ) {
-                        Text(text = "✨ ¡Comenzar! ✨", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "✨ ¡A clases! ✨", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -143,7 +143,7 @@ fun CatchGameMenuScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Text(text = "Volver al Hub 🎀", fontWeight = FontWeight.Bold)
+                        Text(text = "Salir de la ESCOM 🎓", fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -6,20 +6,20 @@ enum class RunnerObstacleType(
     val scoreBonus: Int
 ) {
     SMALL_CACTUS(
-        widthRatio = 0.07f,
-        heightRatio = 0.105f,
+        widthRatio = 0.14f,
+        heightRatio = 0.21f,
         scoreBonus = 5
     ),
 
     TALL_CACTUS(
-        widthRatio = 0.085f,
-        heightRatio = 0.145f,
+        widthRatio = 0.17f,
+        heightRatio = 0.29f,
         scoreBonus = 9
     ),
 
     DOUBLE_CACTUS(
-        widthRatio = 0.125f,
-        heightRatio = 0.12f,
+        widthRatio = 0.25f,
+        heightRatio = 0.24f,
         scoreBonus = 14
     )
 }

@@ -9,8 +9,12 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import com.android.mobile.games.app.games.runner.engine.RunnerGameEngine
 import com.android.mobile.games.app.games.runner.model.RunnerGameState
@@ -21,6 +25,8 @@ import com.android.mobile.games.app.games.runner.model.RunnerObstacleType
 fun RunnerCanvas(
     gameState: RunnerGameState,
     gameEngine: RunnerGameEngine,
+    backgroundImage: ImageBitmap,
+    playerImage: ImageBitmap,
     onCanvasSizeChanged: (Float, Float) -> Unit,
     onJump: () -> Unit
 ) {
@@ -42,70 +48,45 @@ fun RunnerCanvas(
 
         drawRunnerBackground(
             state = gameState,
-            groundLineY = groundLineY
+            groundLineY = groundLineY,
+            backgroundImage = backgroundImage
         )
 
         gameState.obstacles.forEach { obstacle ->
             drawObstacle(obstacle)
         }
 
-        drawDino(
+        drawPlayer(
+            image = playerImage,
             topLeft = Offset(
                 x = gameState.playerX,
                 y = gameState.playerY
             ),
             size = playerSize,
-            isJumping = gameState.isJumping
+            isJumping = gameState.isJumping,
+            distance = gameState.distance
         )
     }
 }
 
 private fun DrawScope.drawRunnerBackground(
     state: RunnerGameState,
-    groundLineY: Float
+    groundLineY: Float,
+    backgroundImage: ImageBitmap
 ) {
-    val skyColor = if (state.score >= 450) {
-        Color(0xFFD6C7FF) // Cute night lavender
-    } else {
-        Color(0xFFFFF0F5) // Cute day pink
-    }
-    val groundColor = if (state.score >= 450) {
-        Color(0xFFFFB4D6) // Pastel pink ground at night
-    } else {
-        Color(0xFFB5EAD7) // Pastel mint green ground at day
-    }
+    val scaleFactor = size.height / backgroundImage.height.toFloat()
+    val scaledWidth = backgroundImage.width * scaleFactor
 
-    drawRect(
-        color = skyColor,
-        size = size
-    )
+    val bgOffset = (state.distance * 0.3f) % scaledWidth
 
-    state.cloudOffsets.forEachIndexed { index, offset ->
-        drawCloud(
-            center = Offset(
-                x = size.width * offset,
-                y = size.height * (0.16f + index * 0.07f)
-            ),
-            color = Color.White.copy(alpha = 0.7f)
-        )
-    }
-
-    drawLine(
-        color = groundColor.copy(alpha = 0.8f),
-        start = Offset(0f, groundLineY),
-        end = Offset(size.width, groundLineY),
-        strokeWidth = 6f
-    )
-
-    val groundOffset = (state.distance % 80f)
-    repeat((size.width / 80f).toInt() + 2) { index ->
-        val x = index * 80f - groundOffset
-        drawLine(
-            color = Color.White.copy(alpha = 0.8f),
-            start = Offset(x, groundLineY + 14f),
-            end = Offset(x + 22f, groundLineY + 14f),
-            strokeWidth = 3f
-        )
+    var currentX = -bgOffset
+    while (currentX < size.width) {
+        translate(left = currentX, top = 0f) {
+            scale(scaleX = scaleFactor, scaleY = scaleFactor, pivot = Offset.Zero) {
+                drawImage(image = backgroundImage)
+            }
+        }
+        currentX += scaledWidth
     }
 }
 
@@ -136,56 +117,28 @@ private fun DrawScope.drawCloud(
     )
 }
 
-private fun DrawScope.drawDino(
+private fun DrawScope.drawPlayer(
+    image: ImageBitmap,
     topLeft: Offset,
     size: Float,
-    isJumping: Boolean
+    isJumping: Boolean,
+    distance: Float
 ) {
-    val bodyColor = Color(0xFFFF94B8) // Super cute pink Dino!
-    val legOffset = if (isJumping) size * 0.04f else 0f
+    val scaleX = size / image.width.toFloat()
+    val scaleY = size / image.height.toFloat()
 
-    drawRoundRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.18f, size * 0.34f),
-        size = Size(size * 0.46f, size * 0.42f),
-        cornerRadius = CornerRadius(size * 0.07f, size * 0.07f)
-    )
+    // Animación de carrera (saltitos y rotación)
+    val runningPhase = distance * 0.05f
+    val bobbingY = if (isJumping) 0f else kotlin.math.abs(kotlin.math.sin(runningPhase)) * size * 0.15f
+    val rotation = if (isJumping) 0f else kotlin.math.sin(runningPhase) * 12f
 
-    drawRoundRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.48f, size * 0.12f),
-        size = Size(size * 0.34f, size * 0.28f),
-        cornerRadius = CornerRadius(size * 0.05f, size * 0.05f)
-    )
-
-    drawRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.08f, size * 0.44f),
-        size = Size(size * 0.18f, size * 0.1f)
-    )
-
-    drawRect(
-        color = Color.White,
-        topLeft = topLeft + Offset(size * 0.7f, size * 0.19f),
-        size = Size(size * 0.04f, size * 0.04f)
-    )
-
-    drawRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.31f, size * 0.72f),
-        size = Size(size * 0.1f, size * 0.22f + legOffset)
-    )
-    drawRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.52f, size * 0.72f + legOffset),
-        size = Size(size * 0.1f, size * 0.22f - legOffset)
-    )
-
-    drawRect(
-        color = bodyColor,
-        topLeft = topLeft + Offset(size * 0.62f, size * 0.43f),
-        size = Size(size * 0.12f, size * 0.06f)
-    )
+    translate(left = topLeft.x, top = topLeft.y - bobbingY) {
+        rotate(degrees = rotation, pivot = Offset(size / 2f, size)) {
+            scale(scaleX = scaleX, scaleY = scaleY, pivot = Offset.Zero) {
+                drawImage(image = image)
+            }
+        }
+    }
 }
 
 private fun DrawScope.drawObstacle(

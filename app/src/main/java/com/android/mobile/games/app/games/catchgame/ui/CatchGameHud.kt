@@ -41,13 +41,13 @@ fun CatchGameHud(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                text = "⭐ Puntos: $score  👑 Récord: $bestScore",
+                text = "⭐ Promedio: $score  👑 Récord: $bestScore",
                 color = TextDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "❌ Escapados: $missedCount",
+                text = "❌ Objetos perdidos: $missedCount",
                 color = TextDark,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
@@ -60,7 +60,7 @@ fun CatchGameHud(
         ) {
             repeat(lives.coerceAtLeast(0)) {
                 Image(
-                    painter = painterResource(id = R.drawable.ui_heart),
+                    painter = painterResource(id = R.drawable.score),
                     contentDescription = null,
                     modifier = Modifier.size(22.dp)
                 )
