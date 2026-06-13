@@ -13,11 +13,15 @@ data class FruitNinjaGameState(
     val timeRemainingSeconds: Int = 60,
 
     val difficulty: FruitNinjaDifficulty =
-        FruitNinjaDifficulty.EASY,
+        FruitNinjaDifficulty.CLASSIC,
 
     val isRunning: Boolean = false,
 
     val isPaused: Boolean = false,
 
-    val isGameOver: Boolean = false
+    val isGameOver: Boolean = false,
+
+    val bugsEliminated: Int = 0,
+
+    val maxCombo: Int = 0
 )

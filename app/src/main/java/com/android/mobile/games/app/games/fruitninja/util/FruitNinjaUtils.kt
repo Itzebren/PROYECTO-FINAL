@@ -17,11 +17,26 @@ fun createRandomFruitNinjaItem(
     val type = createRandomItemType(difficulty)
     val radius = getItemRadius(type)
 
-    val startX = Random.nextFloat() * screenWidth
+    // 1. MARGEN DE SEGURIDAD
+    // Evitamos que el ítem aparezca en los bordes extremos (izquierdo o derecho)
+    val margin = radius * 2
+    val usableWidth = screenWidth - (margin * 2)
+    val startX = (Random.nextFloat() * usableWidth) + margin
+
+    // El ítem nace justo debajo del borde inferior de la pantalla
     val startY = screenHeight + radius
 
-    val velocityX = Random.nextFloat() * 8f - 4f
-    val baseVelocityY = -(Random.nextFloat() * 16f + 18f)
+    // 2. VELOCIDAD HORIZONTAL INTELIGENTE
+    // Si el ítem nace en la mitad izquierda, le damos velocidad hacia la DERECHA
+    // Si nace en la mitad derecha, le damos velocidad hacia la IZQUIERDA
+    val centerScreen = screenWidth / 2
+    val forceTowardsCenter = if (startX < centerScreen) 3f else -3f
+
+    // Le sumamos un poco de aleatoriedad para que las trayectorias varíen
+    val velocityX = forceTowardsCenter + (Random.nextFloat() * 2f - 1f)
+
+    // 3. VELOCIDAD VERTICAL (Hacia arriba)
+    val baseVelocityY = -(Random.nextFloat() * 14f + 16f)
     val velocityY = baseVelocityY * difficulty.initialSpeedMultiplier
 
     return FruitNinjaItem(
@@ -45,37 +60,20 @@ fun isPointInsideItem(
     return distance <= item.radius
 }
 
-private fun createRandomItemType(
-    difficulty: FruitNinjaDifficulty
-): FruitNinjaItemType {
-    val bombRoll = Random.nextInt(100)
 
-    if (bombRoll < difficulty.bombProbability) {
-        return FruitNinjaItemType.BOMB
+private fun createRandomItemType(difficulty: FruitNinjaDifficulty): FruitNinjaItemType {
+    val roll = Random.nextInt(100)
+    return when {
+        // En Modo Relax NO hay café tachado
+        roll < difficulty.penaltyProbability && difficulty != FruitNinjaDifficulty.RELAX -> FruitNinjaItemType.CAFE_TACHADO
+        // Bonus de IPN Card solo en Salvar el Semestre
+        roll > 92 && difficulty == FruitNinjaDifficulty.SAVE_SEMESTER -> FruitNinjaItemType.IPN_CARD
+        else -> listOf(FruitNinjaItemType.BUG, FruitNinjaItemType.ERROR, FruitNinjaItemType.NULO).random()
     }
-
-    val fruits = listOf(
-        FruitNinjaItemType.APPLE,
-        FruitNinjaItemType.BANANA,
-        FruitNinjaItemType.WATERMELON,
-        FruitNinjaItemType.ORANGE,
-        FruitNinjaItemType.PINEAPPLE,
-        FruitNinjaItemType.COCONUT
-    )
-
-    return fruits.random()
 }
 
-private fun getItemRadius(
-    type: FruitNinjaItemType
-): Float {
-    return when (type) {
-        FruitNinjaItemType.BOMB -> 44f
-        FruitNinjaItemType.BANANA -> 56f
-        FruitNinjaItemType.PINEAPPLE -> 58f
-        FruitNinjaItemType.WATERMELON -> 60f
-        FruitNinjaItemType.COCONUT -> 52f
-        FruitNinjaItemType.APPLE,
-        FruitNinjaItemType.ORANGE -> 50f
-    }
+private fun getItemRadius(type: FruitNinjaItemType): Float = when (type) {
+    FruitNinjaItemType.IPN_CARD -> 85f
+    FruitNinjaItemType.CAFE_TACHADO -> 75f
+    else -> 80f
 }

@@ -1,21 +1,26 @@
 package com.android.mobile.games.app.games.fruitninja.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
+import com.android.mobile.games.app.ui.theme.*
 
 @Composable
 fun FruitNinjaHud(
@@ -26,50 +31,65 @@ fun FruitNinjaHud(
     difficulty: FruitNinjaDifficulty,
     modifier: Modifier = Modifier
 ) {
-    Surface(
+    val hudTextStyle = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        color = TextDark,
+        shadow = Shadow(color = CutePink.copy(alpha = 0.8f), blurRadius = 4f)
+    )
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(12.dp),
-        color = Color.Black.copy(alpha = 0.35f),
-        shape = MaterialTheme.shapes.large
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(CuteCream.copy(alpha = 0.9f))
+            .border(2.dp, CutePink, RoundedCornerShape(20.dp))
+            .padding(14.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(14.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = "⭐ SCORE: ${score.toString().padStart(6, '0')}", style = hudTextStyle)
                 Text(
-                    text = "Time: ${timeRemainingSeconds}s",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = "Lives: $lives",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = "👑 BEST: ${bestScore.toString().padStart(6, '0')}",
+                    style = hudTextStyle.copy(fontSize = 12.sp, shadow = null),
+                    color = TextDark.copy(alpha = 0.7f)
                 )
             }
 
-            Text(
-                text = "Score: $score",
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            // Vasos de Café (Vidas) - super cute spacing
+            if (difficulty.hasLives) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(3) { i ->
+                        Image(
+                            painter = painterResource(if (i < lives) R.drawable.cafe_con_vida else R.drawable.cafe_menos_vida),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .padding(horizontal = 1.dp)
+                        )
+                    }
+                }
+            }
+        }
 
-            Text(
-                text = "Best ${difficulty.label}: $bestScore",
-                color = Color.White.copy(alpha = 0.85f),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 2.dp)
+        if (difficulty.hasTimer) {
+            Spacer(modifier = Modifier.height(8.dp))
+            LinearProgressIndicator(
+                progress = { timeRemainingSeconds / 60f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                color = CutePink,
+                trackColor = CuteLavender.copy(alpha = 0.3f)
             )
         }
     }

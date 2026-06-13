@@ -20,9 +20,12 @@ import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+import com.android.mobile.games.app.games.fruitninja.data.RetrofitGameService
+
 @Composable
 fun FruitNinjaScreen(
     difficulty: FruitNinjaDifficulty,
+    username: String,
     onBackToMenuClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -30,6 +33,10 @@ fun FruitNinjaScreen(
 
     val scoreRepository = remember {
         FruitNinjaScoreRepository(context = context)
+    }
+
+    val gameService = remember {
+        RetrofitGameService()
     }
 
     val bestScore by scoreRepository
@@ -88,9 +95,15 @@ fun FruitNinjaScreen(
 
     LaunchedEffect(gameState.isGameOver) {
         if (gameState.isGameOver) {
+            // Guardamos localmente y en el servidor una sola vez al terminar
             scoreRepository.saveBestScoreIfNeeded(
                 difficulty = difficulty,
                 score = gameState.score
+            )
+            gameService.uploadScore(
+                username = username,
+                score = gameState.score,
+                difficulty = difficulty.name
             )
         }
     }
@@ -127,24 +140,10 @@ fun FruitNinjaScreen(
                 bestScore = maxOf(bestScore, gameState.score),
                 difficulty = difficulty,
                 onRestartClick = {
-                    coroutineScope.launch {
-                        scoreRepository.saveBestScoreIfNeeded(
-                            difficulty = difficulty,
-                            score = gameState.score
-                        )
-
-                        gameState = gameEngine.createInitialState()
-                    }
+                    gameState = gameEngine.createInitialState()
                 },
                 onBackToMenuClick = {
-                    coroutineScope.launch {
-                        scoreRepository.saveBestScoreIfNeeded(
-                            difficulty = difficulty,
-                            score = gameState.score
-                        )
-
-                        onBackToMenuClick()
-                    }
+                    onBackToMenuClick()
                 },
                 modifier = Modifier.align(Alignment.Center)
             )
