@@ -1,19 +1,16 @@
 package com.android.mobile.games.app.games.fruitmerge.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.android.mobile.games.app.ui.theme.*
 
 @Composable
 fun FruitMergeGameOverPanel(
@@ -24,42 +21,63 @@ fun FruitMergeGameOverPanel(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth(0.86f)
+        modifier = modifier.fillMaxWidth(0.86f),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(3.dp, CutePink),
+        colors = CardDefaults.cardColors(containerColor = CuteCream)
     ) {
         Column(
-            modifier = Modifier.padding(22.dp),
+            modifier = Modifier.padding(28.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Game Over",
-                style = MaterialTheme.typography.headlineMedium,
+                text = "🍧 FIN DEL JUEGO 🍧",
+                color = TextDark,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 22.sp
+            )
+
+            Text(
+                text = "Puntaje: $score ⭐",
+                color = TextDark,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Score: $score",
-                style = MaterialTheme.typography.titleLarge
+                text = "Récord: $bestScore 👑",
+                color = TextDark.copy(alpha = 0.8f),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
             )
 
-            Text(
-                text = "Best: $bestScore",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = onRestartClick,
-                modifier = Modifier.fillMaxWidth()
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CutePink,
+                    contentColor = TextDark
+                ),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
             ) {
-                Text(text = "Restart")
+                Text(text = "✨ ¡Reintentar! ✨", fontWeight = FontWeight.Bold)
             }
 
             OutlinedButton(
                 onClick = onBackToMenuClick,
-                modifier = Modifier.fillMaxWidth()
+                border = BorderStroke(2.dp, CuteLavender),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDark),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
             ) {
-                Text(text = "Menu")
+                Text(text = "Volver al Menú 🎀", fontWeight = FontWeight.Bold)
             }
         }
     }

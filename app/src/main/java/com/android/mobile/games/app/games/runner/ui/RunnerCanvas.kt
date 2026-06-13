@@ -65,14 +65,14 @@ private fun DrawScope.drawRunnerBackground(
     groundLineY: Float
 ) {
     val skyColor = if (state.score >= 450) {
-        Color(0xFF1E2833)
+        Color(0xFFD6C7FF) // Cute night lavender
     } else {
-        Color(0xFFF8FAF5)
+        Color(0xFFFFF0F5) // Cute day pink
     }
     val groundColor = if (state.score >= 450) {
-        Color(0xFFDBDFD4)
+        Color(0xFFFFB4D6) // Pastel pink ground at night
     } else {
-        Color(0xFF535353)
+        Color(0xFFB5EAD7) // Pastel mint green ground at day
     }
 
     drawRect(
@@ -86,22 +86,22 @@ private fun DrawScope.drawRunnerBackground(
                 x = size.width * offset,
                 y = size.height * (0.16f + index * 0.07f)
             ),
-            color = groundColor.copy(alpha = 0.28f)
+            color = Color.White.copy(alpha = 0.7f)
         )
     }
 
     drawLine(
-        color = groundColor,
+        color = groundColor.copy(alpha = 0.8f),
         start = Offset(0f, groundLineY),
         end = Offset(size.width, groundLineY),
-        strokeWidth = 4f
+        strokeWidth = 6f
     )
 
     val groundOffset = (state.distance % 80f)
     repeat((size.width / 80f).toInt() + 2) { index ->
         val x = index * 80f - groundOffset
         drawLine(
-            color = groundColor.copy(alpha = 0.55f),
+            color = Color.White.copy(alpha = 0.8f),
             start = Offset(x, groundLineY + 14f),
             end = Offset(x + 22f, groundLineY + 14f),
             strokeWidth = 3f
@@ -141,7 +141,7 @@ private fun DrawScope.drawDino(
     size: Float,
     isJumping: Boolean
 ) {
-    val bodyColor = Color(0xFF2F3637)
+    val bodyColor = Color(0xFFFF94B8) // Super cute pink Dino!
     val legOffset = if (isJumping) size * 0.04f else 0f
 
     drawRoundRect(
@@ -224,7 +224,7 @@ private fun DrawScope.drawCactus(
     obstacle: RunnerObstacle,
     arms: Int
 ) {
-    val cactusColor = Color(0xFF2E6D3E)
+    val cactusColor = Color(0xFF9DE0AD) // Pastel green cactus
     val bodyPath = Path().apply {
         moveTo(obstacle.x + obstacle.width * 0.34f, obstacle.y + obstacle.height)
         lineTo(obstacle.x + obstacle.width * 0.34f, obstacle.y + obstacle.height * 0.12f)

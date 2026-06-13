@@ -13,5 +13,6 @@ data class CatchGameUiState(
     val triviaTimeLeftSeconds: Int = 0,
     val triviaFeedbackMessage: String? = null,
     val isTriviaAnswerLocked: Boolean = false,
-    val triviaAnswerWasCorrect: Boolean? = null
+    val triviaAnswerWasCorrect: Boolean? = null,
+    val missedCount: Int = 0
 )

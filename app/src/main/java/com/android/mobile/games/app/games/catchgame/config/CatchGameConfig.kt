@@ -9,15 +9,15 @@ object CatchGameConfig {
     const val TRIVIA_TIME_SECONDS = 10
 
     val foodDrawables = listOf(
-        R.drawable.food_apple,
-        R.drawable.food_banana,
-        R.drawable.food_burger,
-        R.drawable.food_cake
+        R.drawable.laptop,
+        R.drawable.mochila,
+        R.drawable.lapiz,
+        R.drawable.credencial,
+        R.drawable.cafe,
+        R.drawable.arduino
     )
 
     val badDrawables = listOf(
-        R.drawable.bad_bomb,
-        R.drawable.bad_poison,
-        R.drawable.bad_rock
+        R.drawable.ets
     )
 }

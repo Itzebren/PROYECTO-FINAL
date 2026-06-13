@@ -90,6 +90,7 @@ fun CatchGameScreen(
     }
 
     LaunchedEffect(
+        controller,
         uiState.isTriviaVisible,
         uiState.isTriviaAnswerLocked
     ) {
@@ -104,6 +105,7 @@ fun CatchGameScreen(
     }
 
     LaunchedEffect(
+        controller,
         uiState.triviaFeedbackMessage,
         uiState.isTriviaAnswerLocked
     ) {
@@ -129,7 +131,7 @@ fun CatchGameScreen(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(uiState.isTriviaVisible) {
+            .pointerInput(controller, uiState.isTriviaVisible) {
                 if (!uiState.isTriviaVisible) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -144,14 +146,15 @@ fun CatchGameScreen(
     ) {
         val screenWidthPx = with(density) { maxWidth.toPx() }
         val screenHeightPx = with(density) { maxHeight.toPx() }
-        val playerWidthPx = (screenWidthPx * 0.22f).coerceIn(74f, 118f)
+        val playerWidthPx = (screenWidthPx * 0.40f).coerceIn(200f, 500f)
         val playerHeightPx = playerWidthPx
-        val itemSizePx = (screenWidthPx * 0.135f).coerceIn(44f, 66f)
+        val itemSizePx = (screenWidthPx * 0.25f).coerceIn(100f, 150f)
         val floorMarginPx = (screenHeightPx * 0.022f).coerceIn(12f, 26f)
         val playerSizeDp = with(density) { playerWidthPx.toDp() }
         val itemSizeDp = with(density) { itemSizePx.toDp() }
 
         LaunchedEffect(
+            controller,
             screenWidthPx,
             screenHeightPx,
             playerWidthPx,
@@ -206,6 +209,7 @@ fun CatchGameScreen(
             score = uiState.score,
             bestScore = maxOf(bestScore, uiState.score),
             lives = uiState.lives,
+            missedCount = uiState.missedCount,
             modifier = Modifier.align(Alignment.TopCenter)
         )
 

@@ -1,35 +1,28 @@
 package com.android.mobile.games.app.games.catchgame.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
+import com.android.mobile.games.app.ui.theme.*
 
 @Composable
 fun CatchGameMenuScreen(
@@ -48,61 +41,111 @@ fun CatchGameMenuScreen(
             modifier = Modifier.fillMaxSize()
         )
 
+        // Overlay transparent pink to make it cuter
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(CutePink.copy(alpha = 0.15f))
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .verticalScroll(rememberScrollState())
-                .padding(22.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Catch Game",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            Row(
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                color = CuteCream.copy(alpha = 0.9f),
+                shape = RoundedCornerShape(32.dp),
+                border = BorderStroke(3.dp, CuteLavender),
+                shadowElevation = 8.dp
             ) {
-                CatchDifficultyCard(
-                    difficulty = CatchGameDifficulty.EASY,
-                    selectedDifficulty = selectedDifficulty,
-                    onClick = onDifficultySelected,
-                    modifier = Modifier.weight(1f)
-                )
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "🐛 BUG CATCHER 🍦",
+                        color = TextDark,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-                CatchDifficultyCard(
-                    difficulty = CatchGameDifficulty.MEDIUM,
-                    selectedDifficulty = selectedDifficulty,
-                    onClick = onDifficultySelected,
-                    modifier = Modifier.weight(1f)
-                )
+                    Text(
+                        text = "Elige tu dificultad para atrapar bugs",
+                        color = TextDark.copy(alpha = 0.7f),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
 
-                CatchDifficultyCard(
-                    difficulty = CatchGameDifficulty.HARD,
-                    selectedDifficulty = selectedDifficulty,
-                    onClick = onDifficultySelected,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CatchDifficultyCard(
+                            difficulty = CatchGameDifficulty.EASY,
+                            selectedDifficulty = selectedDifficulty,
+                            onClick = onDifficultySelected,
+                            color = CuteMint,
+                            modifier = Modifier.weight(1f)
+                        )
 
-            Button(
-                onClick = onStartGameClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Start")
-            }
+                        CatchDifficultyCard(
+                            difficulty = CatchGameDifficulty.MEDIUM,
+                            selectedDifficulty = selectedDifficulty,
+                            onClick = onDifficultySelected,
+                            color = CuteYellow,
+                            modifier = Modifier.weight(1f)
+                        )
 
-            OutlinedButton(
-                onClick = onBackClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Back")
+                        CatchDifficultyCard(
+                            difficulty = CatchGameDifficulty.HARD,
+                            selectedDifficulty = selectedDifficulty,
+                            onClick = onDifficultySelected,
+                            color = CutePink,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    Button(
+                        onClick = onStartGameClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CutePink,
+                            contentColor = TextDark
+                        ),
+                        shape = RoundedCornerShape(18.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                    ) {
+                        Text(text = "✨ ¡Comenzar! ✨", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedButton(
+                        onClick = onBackClick,
+                        border = BorderStroke(2.dp, CuteLavender),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDark),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Text(text = "Volver al Hub 🎀", fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
     }
@@ -113,36 +156,40 @@ private fun CatchDifficultyCard(
     difficulty: CatchGameDifficulty,
     selectedDifficulty: CatchGameDifficulty,
     onClick: (CatchGameDifficulty) -> Unit,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     val isSelected = difficulty == selectedDifficulty
 
     Card(
-        onClick = {
-            onClick(difficulty)
-        },
-        modifier = modifier,
+        onClick = { onClick(difficulty) },
+        modifier = modifier
+            .clip(RoundedCornerShape(18.dp))
+            .border(
+                width = if (isSelected) 3.dp else 1.5.dp,
+                color = if (isSelected) color else color.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(18.dp)
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
-            }
+            containerColor = if (isSelected) color.copy(alpha = 0.4f) else Color.White
         )
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val emoji = when (difficulty) {
+                CatchGameDifficulty.EASY -> "😊"
+                CatchGameDifficulty.MEDIUM -> "😐"
+                CatchGameDifficulty.HARD -> "💀"
+            }
+            Text(emoji, fontSize = 24.sp)
             Text(
                 text = difficulty.label,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = difficulty.description,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
             )
         }
     }

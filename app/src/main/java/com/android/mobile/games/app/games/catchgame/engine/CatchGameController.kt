@@ -33,6 +33,7 @@ class CatchGameController(
     private var isInitialized = false
     private var targetPlayerX = 0f
     private var spawnAccumulatorMs = 0f
+    private var totalElapsedTimeSeconds = 0f
     private var nextItemId = 0L
 
     fun initializeLayout(
@@ -62,14 +63,14 @@ class CatchGameController(
         val initialPlayerY = screenHeightPx - playerHeightPx - floorMarginPx
 
         targetPlayerX = if (isInitialized) {
-            targetPlayerX.coerceIn(0f, screenWidthPx - playerWidthPx)
+            targetPlayerX.coerceIn(-playerWidthPx / 2f, screenWidthPx - playerWidthPx / 2f)
         } else {
             initialPlayerX
         }
 
         uiState = uiState.copy(
             playerX = if (isInitialized) {
-                uiState.playerX.coerceIn(0f, screenWidthPx - playerWidthPx)
+                uiState.playerX.coerceIn(-playerWidthPx / 2f, screenWidthPx - playerWidthPx / 2f)
             } else {
                 initialPlayerX
             },
@@ -85,13 +86,15 @@ class CatchGameController(
         }
 
         targetPlayerX = (touchX - playerWidthPx / 2f)
-            .coerceIn(0f, screenWidthPx - playerWidthPx)
+            .coerceIn(-playerWidthPx / 2f, screenWidthPx - playerWidthPx / 2f)
     }
 
     fun update(deltaSeconds: Float) {
         if (!isInitialized || uiState.isGameOver || uiState.isTriviaVisible) {
             return
         }
+
+        totalElapsedTimeSeconds += deltaSeconds
 
         updatePlayer(deltaSeconds)
         updateSpawner(deltaSeconds)
@@ -174,20 +177,27 @@ class CatchGameController(
                 deltaSeconds
 
         uiState = uiState.copy(
-            playerX = updatedX.coerceIn(0f, screenWidthPx - playerWidthPx)
+            playerX = updatedX.coerceIn(-playerWidthPx / 2f, screenWidthPx - playerWidthPx / 2f)
         )
     }
 
     private fun updateSpawner(deltaSeconds: Float) {
         spawnAccumulatorMs += deltaSeconds * 1000f
 
-        while (spawnAccumulatorMs >= difficulty.spawnIntervalMs) {
-            spawnAccumulatorMs -= difficulty.spawnIntervalMs
+        val timeLevel = (totalElapsedTimeSeconds / 10f).toInt()
+        val spawnMultiplier = kotlin.math.max(0.3f, 1f - timeLevel * 0.10f)
+        val currentSpawnIntervalMs = difficulty.spawnIntervalMs * spawnMultiplier
+
+        while (spawnAccumulatorMs >= currentSpawnIntervalMs) {
+            spawnAccumulatorMs -= currentSpawnIntervalMs
             spawnItem()
         }
     }
 
     private fun spawnItem() {
+        val timeLevel = (totalElapsedTimeSeconds / 10f).toInt()
+        val speedMultiplier = 1f + timeLevel * 0.15f
+
         val isBad = random.nextFloat() < difficulty.badObjectProbability
         val drawableRes = if (isBad) {
             CatchGameConfig.badDrawables.random(random)
@@ -198,8 +208,8 @@ class CatchGameController(
                 difficulty.minFallSpeedHeightRatio +
                         random.nextFloat() *
                         (difficulty.maxFallSpeedHeightRatio - difficulty.minFallSpeedHeightRatio)
-                )
-        val maxX = max(0f, screenWidthPx - itemSizePx)
+                ) * speedMultiplier
+        val maxX = kotlin.math.max(0f, screenWidthPx - itemSizePx)
 
         uiState = uiState.copy(
             items = uiState.items + CatchGameItem(
@@ -220,6 +230,13 @@ class CatchGameController(
         var gameOver = uiState.isGameOver
         var triggerTrivia = false
         var rescueChanceUsed = uiState.rescueChanceUsed
+        var missedCount = uiState.missedCount
+
+        val missedLimit = when (difficulty) {
+            CatchGameDifficulty.EASY -> 7
+            CatchGameDifficulty.MEDIUM -> 5
+            CatchGameDifficulty.HARD -> 3
+        }
 
         uiState.items.forEach { item ->
             val movedItem = item.copy(
@@ -244,6 +261,13 @@ class CatchGameController(
 
             if (movedItem.y <= screenHeightPx) {
                 updatedItems += movedItem
+            } else {
+                if (!movedItem.isBad) {
+                    missedCount += 1
+                    if (missedCount > missedLimit) {
+                        gameOver = true
+                    }
+                }
             }
         }
 
@@ -252,7 +276,8 @@ class CatchGameController(
             lives = lives,
             items = updatedItems,
             isGameOver = gameOver,
-            rescueChanceUsed = rescueChanceUsed
+            rescueChanceUsed = rescueChanceUsed,
+            missedCount = missedCount
         )
 
         uiState = if (triggerTrivia) {

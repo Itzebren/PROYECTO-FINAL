@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
-
 import com.android.mobile.games.app.games.fruitninja.data.RetrofitGameService
+import com.android.mobile.games.app.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,7 +50,9 @@ fun FruitNinjaMenuScreen(
 
         // 2. BOTONES SUPERIORES (AYUDA Y RANKING)
         Row(
-            modifier = Modifier.align(Alignment.TopEnd).padding(24.dp),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Botón Ranking
@@ -67,7 +69,7 @@ fun FruitNinjaMenuScreen(
             ) {
                 Surface(
                     shape = RoundedCornerShape(50),
-                    color = Color(0xFFFFD700),
+                    color = CuteYellow,
                     border = BorderStroke(2.dp, Color.White)
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -85,44 +87,57 @@ fun FruitNinjaMenuScreen(
             ) {
                 Surface(
                     shape = RoundedCornerShape(50),
-                    color = Color(0xFFD100FF),
+                    color = CuteLavender,
                     border = BorderStroke(2.dp, Color.White)
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Text("?", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                        Text("?", color = TextDark, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
 
-        // 3. PANEL DE CONTROL
+        // 3. PANEL DE CONTROL (Super cute glassmorphic pink)
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            color = Color.Black.copy(alpha = 0.6f)
+            color = CuteCream.copy(alpha = 0.9f),
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+            border = BorderStroke(2.dp, CutePink)
         ) {
             Column(
                 modifier = Modifier.padding(vertical = 24.dp, horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "🌸 CODE SLASHER 🌸",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
                 // Campo de Nombre de Usuario
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text("NOMBRE DEL PROGRAMADOR", color = Color.White.copy(alpha = 0.7f)) },
+                    label = { Text("Nombre del programador", color = TextDark.copy(alpha = 0.7f)) },
                     modifier = Modifier.fillMaxWidth(0.85f),
                     textStyle = androidx.compose.ui.text.TextStyle(
-                        color = Color.White,
-                        fontFamily = FontFamily.Monospace,
+                        color = TextDark,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 16.sp
                     ),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFD100FF),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        cursorColor = Color(0xFFD100FF)
-                    )
+                        focusedBorderColor = CutePink,
+                        unfocusedBorderColor = CutePink.copy(alpha = 0.5f),
+                        cursorColor = CutePink,
+                        focusedLabelColor = CutePink,
+                        unfocusedLabelColor = TextDark.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -145,42 +160,39 @@ fun FruitNinjaMenuScreen(
                     enabled = username.isNotBlank(),
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .heightIn(min = 56.dp, max = 80.dp),
+                        .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFD100FF),
-                        disabledContainerColor = Color.Gray
+                        containerColor = CutePink,
+                        disabledContainerColor = Color.LightGray,
+                        contentColor = TextDark
                     ),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    shape = RoundedCornerShape(18.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                 ) {
                     Text(
-                        text = "[ ¡A COMPILAR! ]",
-                        fontSize = 18.sp, // Reducido de 22.sp para mejor ajuste
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
-                        softWrap = false, // Evita saltos de línea si es posible
+                        text = "✨ ¡A COMPILAR! ✨",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark,
                         maxLines = 1
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // BOTÓN CERRAR LAB
                 OutlinedButton(
                     onClick = onBackClick,
                     modifier = Modifier.fillMaxWidth(0.7f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    border = BorderStroke(1.5.dp, CuteLavender),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDark),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text(
-                        "CERRAR LABORATORIO",
-                        fontSize = 11.sp, // Ajuste menor
-                        fontFamily = FontFamily.Monospace,
+                        "CERRAR LABORATORIO 🎀",
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
+                        color = TextDark,
                         maxLines = 1
                     )
                 }
@@ -191,22 +203,28 @@ fun FruitNinjaMenuScreen(
         if (showRankingModal) {
             AlertDialog(
                 onDismissRequest = { showRankingModal = false },
-                containerColor = Color(0xFF1A1A2E),
-                title = { Text("TOP PROGRAMADORES", color = Color(0xFF00FFF0), fontFamily = FontFamily.Monospace) },
+                containerColor = CuteCream,
+                title = { Text("👑 TOP PROGRAMADORES 👑", color = TextDark, fontWeight = FontWeight.Bold) },
                 text = {
                     Column(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp)) {
                         if (isLoadingRanking) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = Color(0xFF00FFF0))
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = CutePink)
                         } else if (rankingData.isEmpty()) {
-                            Text("No hay registros aún.", color = Color.White)
+                            Text("No hay registros aún.", color = TextDark)
                         } else {
                             rankingData.forEachIndexed { index, pair ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text("${index + 1}. ${pair.first}", color = Color.White, fontFamily = FontFamily.Monospace)
-                                    Text("${pair.second} pts", color = Color(0xFF00FFF0), fontWeight = FontWeight.Bold)
+                                    val emoji = when(index) {
+                                        0 -> "🥇 "
+                                        1 -> "🥈 "
+                                        2 -> "🥉 "
+                                        else -> "${index + 1}. "
+                                    }
+                                    Text(text = "$emoji${pair.first}", color = TextDark, fontWeight = FontWeight.SemiBold)
+                                    Text(text = "${pair.second} pts", color = CutePink, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -214,32 +232,34 @@ fun FruitNinjaMenuScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { showRankingModal = false }) {
-                        Text("CERRAR", color = Color(0xFF00FFF0))
+                        Text("CERRAR 🎀", color = CutePink, fontWeight = FontWeight.Bold)
                     }
-                }
+                },
+                shape = RoundedCornerShape(24.dp)
             )
         }
 
-        // 4. MODAL DE AYUDA (Se mantiene igual)
+        // 4. MODAL DE AYUDA
         if (showHelpModal) {
             AlertDialog(
                 onDismissRequest = { showHelpModal = false },
-                containerColor = Color(0xFF1A1A2E),
-                title = { Text("MISIÓN: CÓDIGO LIMPIO", color = Color(0xFFD100FF), fontFamily = FontFamily.Monospace) },
+                containerColor = CuteCream,
+                title = { Text("🎀 MISIÓN: CÓDIGO LIMPIO 🎀", color = TextDark, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("OBJETIVO: Elimina los BUGS y ERRORES antes de la entrega.", color = Color.White)
+                        Text("OBJETIVO: Elimina los BUGS y ERRORES con tu espada mágica.", color = TextDark)
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text("• COMBO: Corta 3+ ítems.", color = Color.White.copy(0.7f), fontSize = 12.sp)
-                        Text("• IPN CARD: +5 segundos.", color = Color.White.copy(0.7f), fontSize = 12.sp)
-                        Text("• CAFÉ TACHADO: ¡Cuidado! Quita vidas.", color = Color.White.copy(0.7f), fontSize = 12.sp)
+                        Text("• COMBO: Corta 3+ ítems a la vez. 🎉", color = TextDark.copy(0.8f), fontSize = 13.sp)
+                        Text("• IPN CARD: Te regala +5 segundos. 💳", color = TextDark.copy(0.8f), fontSize = 13.sp)
+                        Text("• CAFÉ TACHADO: ¡Quita vidas! Evítalo. ☕❌", color = TextDark.copy(0.8f), fontSize = 13.sp)
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = { showHelpModal = false }) {
-                        Text("ENTENDIDO", color = Color(0xFFD100FF))
+                        Text("¡ENTENDIDO! ✨", color = CutePink, fontWeight = FontWeight.Bold)
                     }
-                }
+                },
+                shape = RoundedCornerShape(24.dp)
             )
         }
     }
@@ -261,26 +281,30 @@ private fun ModeSelectorRow(
                 onClick = { onSelected(mode) },
                 label = {
                     Text(
-                        mode.label,
-                        fontSize = 13.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                        text = when(mode) {
+                            FruitNinjaDifficulty.CLASSIC -> "🍭 " + mode.label
+                            FruitNinjaDifficulty.SAVE_SEMESTER -> "📚 " + mode.label
+                            FruitNinjaDifficulty.RELAX -> "☕ " + mode.label
+                        },
+                        fontSize = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = TextDark
                     )
                 },
                 colors = FilterChipDefaults.filterChipColors(
-                    // Seleccionado: Lila brillante
-                    selectedContainerColor = Color(0xFFD100FF),
-                    selectedLabelColor = Color.White,
-                    // No seleccionado: Fondo oscuro sólido para que no se transparente el fondo
-                    containerColor = Color(0xFF2D2D44),
-                    labelColor = Color.White.copy(alpha = 0.8f)
+                    selectedContainerColor = CutePink,
+                    selectedLabelColor = TextDark,
+                    containerColor = CuteLavender.copy(alpha = 0.4f),
+                    labelColor = TextDark.copy(alpha = 0.8f)
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = isSelected,
-                    borderColor = Color.White.copy(alpha = 0.3f),
-                    selectedBorderColor = Color.White,
+                    borderColor = Color.White,
+                    selectedBorderColor = CutePink,
                     borderWidth = 1.dp
-                )
+                ),
+                shape = RoundedCornerShape(12.dp)
             )
         }
     }

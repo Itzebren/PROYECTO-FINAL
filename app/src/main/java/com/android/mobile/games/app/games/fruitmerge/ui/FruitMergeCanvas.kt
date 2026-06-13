@@ -1,4 +1,4 @@
-﻿package com.android.mobile.games.app.games.fruitmerge.ui
+package com.android.mobile.games.app.games.fruitmerge.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -99,19 +99,21 @@ private fun rememberFruitMergeImages(): Map<FruitMergeFruitType, ImageBitmap> {
 }
 
 private fun DrawScope.drawFruitMergePlayfield() {
+    // Outside background
     drawRect(
-        color = Color(0xFF0E2E38),
+        color = Color(0xFFE6E6FA), // Pastel Lavender
         size = size
     )
 
-    val wallColor = Color(0xFFB86F34)
+    val wallColor = Color(0xFFFFB4D6) // Cute pastel pink walls
     val wallWidth = size.width * 0.035f
     val left = size.width * 0.07f
     val right = size.width * 0.93f
     val bottom = size.height * 0.95f
 
+    // Playfield inside background
     drawRect(
-        color = Color(0xFF163F4A),
+        color = Color(0xFFFFF9FA), // Off-white cream inside playfield
         topLeft = Offset(
             x = left,
             y = size.height * 0.15f
@@ -149,7 +151,7 @@ private fun DrawScope.drawDangerLine() {
     val lineY = size.height * 0.2f
 
     drawLine(
-        color = Color(0xFFE86E61),
+        color = Color(0xFFFF69B4), // Kawaii hot pink danger line
         start = Offset(size.width * 0.09f, lineY),
         end = Offset(size.width * 0.91f, lineY),
         strokeWidth = 4f,

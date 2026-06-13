@@ -1,17 +1,19 @@
 package com.android.mobile.games.app.games.catchgame.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.android.mobile.games.app.games.catchgame.model.TriviaQuestion
+import com.android.mobile.games.app.ui.theme.*
 
 @Composable
 fun CatchTriviaDialog(
@@ -23,10 +25,15 @@ fun CatchTriviaDialog(
 ) {
     AlertDialog(
         onDismissRequest = {},
+        containerColor = CuteCream,
+        shape = RoundedCornerShape(28.dp),
+        tonalElevation = 8.dp,
         title = {
             Text(
-                text = "Last Chance",
-                style = MaterialTheme.typography.titleLarge
+                text = "📖 ¡ÚLTIMA OPORTUNIDAD! ✨",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
             )
         },
         text = {
@@ -34,29 +41,37 @@ fun CatchTriviaDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Category: ${question.category.displayName}",
-                    style = MaterialTheme.typography.titleSmall
+                    text = "Categoría: ${question.category.displayName} 🏷️",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = TextDark.copy(alpha = 0.8f)
                 )
 
                 Text(
-                    text = "Time left: ${timeLeftSeconds}s",
-                    style = MaterialTheme.typography.titleMedium
+                    text = "⏱ Tiempo restante: ${timeLeftSeconds}s",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (timeLeftSeconds <= 3) CutePink else TextDark
                 )
 
                 Text(
                     text = question.question,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextDark,
+                    fontWeight = FontWeight.Medium
                 )
 
                 question.options.forEachIndexed { index, option ->
                     Button(
-                        onClick = {
-                            onAnswerSelected(index)
-                        },
+                        onClick = { onAnswerSelected(index) },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = !isAnswerLocked
+                        enabled = !isAnswerLocked,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CuteLavender,
+                            contentColor = TextDark
+                        ),
+                        shape = RoundedCornerShape(14.dp)
                     ) {
-                        Text(text = option)
+                        Text(text = option, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -64,6 +79,8 @@ fun CatchTriviaDialog(
                     Text(
                         text = message,
                         style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (message.contains("Correct", true) || message.contains("¡", true)) CuteMint else CutePink,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
