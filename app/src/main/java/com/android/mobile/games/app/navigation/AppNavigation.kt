@@ -9,6 +9,8 @@ import androidx.navigation.navArgument
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaMenuScreen
 import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaScreen
+import com.android.mobile.games.app.games.razarun.ui.RazaMenuScreen
+import com.android.mobile.games.app.games.razarun.ui.RazaScreen
 import com.android.mobile.games.app.ui.screens.MainMenuScreen
 
 private const val DIFFICULTY_ARGUMENT = "difficulty"
@@ -26,6 +28,28 @@ fun AppNavigation() {
             MainMenuScreen(
                 onFruitNinjaClick = {
                     navController.navigate(AppRoute.FruitNinjaMenu.route)
+                },
+                onLaRazaRunClick = {
+                    navController.navigate(AppRoute.LaRazaRunMenu.route)
+                }
+            )
+        }
+
+        composable(AppRoute.LaRazaRunMenu.route) {
+            RazaMenuScreen(
+                onStartGameClick = {
+                    navController.navigate(AppRoute.LaRazaRunGame.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(AppRoute.LaRazaRunGame.route) {
+            RazaScreen(
+                onBackToMenuClick = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -77,15 +101,6 @@ fun AppNavigation() {
                     navController.popBackStack()
                 }
             )
-        }
-    }
-}
-
-@Composable
-fun FruitNinjaScreen(
-    difficulty: FruitNinjaDifficulty,
-    username: String,
-    onBackToMenuClick: () -> Boolean
-) {
-    TODO("Not yet implemented")
-}
+            }
+            }
+            }

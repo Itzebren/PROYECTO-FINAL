@@ -1,0 +1,74 @@
+La Raza Run
+
+
+
+Primero requiero que al abrir la app y al seleccionar el juego que dice Runeer Game salta obstáculos al estilo dinosaurio, pero antes cambiaras el nombre a La Raza Run y la descripción dira, Corre a clase antes de que el tiempo se agote, de la lista, se abra la portada del juego la imagen para esa portada sera raza_portada.png y el parte inferior un boton rojo a corde a la estetica del juego que diga "A correr" y de inicio al juego, en la parte superior derecha un boton redondo con un signo de interrogación que habra una pantallita que explique como se juega
+
+El juego la raza run sera un juego tipo dinosaurio de google pero sera de la siguiente manera
+
+El personaje se encuentra desde el punto de partida que corresponde al la imagen raza_inicio.png de ahí se conecta con raza_fondo.png que se cicla hasta completar los 600 metros de recorrido, despues aparece raza_fin que es donde es la meta y aparece el mensaje ¡llegaste a tiempo a tu departamental! 
+
+Hay obstaculos que apareceran en el suelo y seran carritos de dulces(raza_carrito.png), mochilas(raza_mochilas.png) y charcos(raza_charco.png)
+
+SECUENCIAS DE LAS IMÁGENES DE ACCIÓN DEL PERSONAJE
+
+Ciclo de correr: la secuencia es correr1.png, correr2-png, correr3.png, correr4.png y correr5.png y asi ciclicamente
+
+Saltar: saltar1.png, saltar2.png, saltar3.png, saltar4.png, saltar1.png y continua el ciclo de correr
+
+Deslizarse: deslizar1.png, deslizar2.png, deslizar3.png y continua el ciclo de correr
+
+Definición de la Lógica de Distancia y Assets
+Como recordatorio técnico, el Túnel de la Ciencia en la vida real es de 600 metros. Usaremos esta cifra como nuestra meta numérica fija.
+La lógica para expresar esto en el prompt para tu agente se basa en un Sistema de Estados de Fondo. El juego no es infinito; tiene un inicio (raza_inicio.png), un ciclo de recorrido (raza_fondo.png) y un final (raza_fin.png).
+
+ LÓGICA DE DISTANCIA Y ASSETS
+1. Sistema de Distancia y Meta (Objetivo: 600m)
+	• Variable de Estado: Implementar un flotante distanciaRecorrida que inicie en 0.0f.
+	• Velocidad de Carrera: Definir una constante velocidadCarrera (ej: 5.0m/s).
+	• Cálculo de Progreso: En cada cuadro (frame) del Game Loop, actualizar:distanciaRecorrida += velocidadCarrera * deltaTime.
+	• UI/HUD: Mostrar este progreso en la esquina superior como: "Distancia a Meta:
+$$600.0 - distanciaRecorrida$$
+m". Cuando llegue a 0, la cuenta regresiva se detiene.
+	• "Progreso de Dificultad: Incrementar velocidadCarrera un 5% cada 100m recorridos. Asegurarse de que el cálculo del deltaTime y el Parallax se ajusten automáticamente a la nueva velocidad."
+2. Lógica de Superposición de Assets de Fondo (raza_inicio.png, raza_fondo.png, raza_fin.png)
+Guiar la visualización del fondo basándose exclusivamente en el valor de distanciaRecorrida. No renderizar todas las imágenes al mismo tiempo.
+	• FASE 1: Inicio (De 0.0m a 20.0m)
+		○ Asset Principal: raza_inicio.png (Torniquetes).
+		○ Lógica: Al iniciar (distanciaRecorrida > 0), este asset debe comenzar a desplazarse horizontalmente hacia la izquierda hasta desaparecer de la vista por completo. No se debe ciclar. El personaje debe "cruzar" los torniquetes.
+		○ Transición: Una vez que raza_inicio.png sale de la pantalla, se empieza a dibujar e incrementar el Parallax Scrolling de raza_fondo.png.
+	• FASE 2: El Túnel - Ciclo (De 20.1m a 580.0m)
+		○ Asset Principal: raza_fondo.png (Murales Científicos).
+		○ Lógica: Este asset debe ciclarse infinitamente mediante Seamless Scroll. Se deben usar las tres capas separadas anteriormente definidas (Espacio, Muros, Piso) para crear el efecto Parallax. La velocidad del ciclo se correlaciona con velocidadCarrera.
+		○ Checkpoints Visuales (Opcional): Para dar sensación de avance en 600m, cada 100m recorridos, incrementar ligeramente la opacidad de los neones lilas o hacer que un mural específico aparezca una vez.
+	• FASE 3: El Final (De 580.1m a 600.0m)
+		○ Asset Principal: raza_fin.png (Tomar metro hacia metro poli).
+		○ Lógica: Al llegar a los 580m, se detiene el ciclado de raza_fondo.png de manera suave. Se empieza a renderizar raza_fin.png desde el extremo derecho, haciéndolo avanzar hacia la izquierda a la misma velocidad que corríamos.
+		○ Check de Victoria: Cuando distanciaRecorrida >= 600.0f, el asset raza_fin.png debe estar centrado o en la posición final deseada, detener todo movimiento de fondo, detener los controles y mostrar la Pantalla de Victoria: "¡Examen Llegado a Tiempo!".
+3. Implementación de Obstáculos (Puddles, Backpacks, Carts)
+Añadir estas entidades al Game Loop como objetos independientes sobrepuestos en el Canvas.
+	• Assets de Obstáculos: obstaculo_charco.png, obstaculo_mochila.png, obstaculo_carrito.png.
+	• Lógica de Spawn (Generación):
+		○ Utilizar un temporizador aleatorio para hacer spawn de un obstáculo desde el borde derecho de la pantalla.
+		○ Garantía de Esquivabilidad: No generar un obstáculo bajo (charco/mochila) y uno alto (carrito) simultáneamente si no hay suficiente espacio para reaccionar.
+		○ La frecuencia de spawn debe incrementarse conforme distanciaRecorrida se acerque a los 600m.
+	• Interacciones y Colisiones (Hitboxes):
+		○ Charco/Mochila (Spawn a ras de suelo): Colisión activa si el estado del personaje no es JUMPING. Efecto: Colisión total, Game Over instantáneo..
+		○ Carrito Dulces (Spawn a media altura con hueco abajo): Colisión activa si el estado del personaje no es SLIDING (Deslizarse). Efecto: Colisión total, Game Over instantáneo.
+
+En la parte superior derecha se mostrara la distancia que se ha recorrido
+
+sección "4. Estados de Derrota (Game Over)":
+Debe haber un timer de 90 segundos en la parte superior derecha justo debajo de donde se mostrara la distancia
+"Derrota por Tiempo: Si el contador llega a 00:00:00, el fondo raza_fin.png debe renderizarse inmediatamente, pero con la puerta del metro cerrada. Detener controles y mostrar: '¡GAME OVER! El profesor cerró la puerta. Nos vemos en el recursamiento'."
+
+5. Capa de Datos y Backend Falso (Mocking)
+Para asegurar la modularidad y escalabilidad hacia un futuro backend en FastAPI/MySQL/Docker:
+1.Interfaz RazaGameService: Definir métodos para getTopRankings() y submitResult(name, distance, status).
+2.Implementación FakeRazaService: Crear un servicio simulado que:
+◦Almacene temporalmente los resultados en una lista en memoria (List<Pair<String, Float>>).
+◦Simule un retraso de red de 500ms al consultar rankings.
+◦Permita que el juego sea plenamente funcional (registro de puntajes y visualización de récords) de forma local.
+3.Preparación para Backend Real: Estructurar el código de modo que, al desarrollar la API en Docker, solo sea necesario implementar RetrofitRazaService sin tocar la lógica del juego.
+
+Nota: construye este juego sin alterar el que ya esta desarrollado, que es el de Code slasher el primero en lista del menú y el juego la Raza Run se jugara con la pantalla horizontal

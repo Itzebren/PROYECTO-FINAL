@@ -1,4 +1,7 @@
+CODE SLASHER---
+
 Objetivo: Analizar el código actual de un juego en desarrollo y adaptarlo al diseño y mecánicas de "Code Slasher" utilizando Kotlin, Jetpack Compose (Canvas) y arquitectura MVI.
+
 
 1. Análisis de Estructura Actual:
 
@@ -60,3 +63,5 @@ Mantén la configuración limpia para facilitar la posterior dockerización del 
 Ahora una vez hecho eso necesito que comencemos con al backend, se realizara utilizando Fast-Api, mysql y lo que tenemos ya preparado para
 
 realizar el backend a partir de la tiene Persistencia Local con un Servicio Mockeado.
+
+

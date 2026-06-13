@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainMenuScreen(
-    onFruitNinjaClick: () -> Unit
+    onFruitNinjaClick: () -> Unit,
+    onLaRazaRunClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -40,8 +41,8 @@ fun MainMenuScreen(
         )
 
         GameMenuButton(
-            title = "Fruit Ninja",
-            description = "Corta frutas y evita tocar bombas.",
+            title = "Code Slasher",
+            description = "Corta items sin tocar el café.",
             onClick = onFruitNinjaClick
         )
 
@@ -52,9 +53,9 @@ fun MainMenuScreen(
         )
 
         GameMenuButton(
-            title = "Runner Game",
-            description = "Salta obstáculos al estilo dinosaurio.",
-            onClick = {}
+            title = "La Raza Run",
+            description = "Corre a clase antes de que el tiempo se agote.",
+            onClick = onLaRazaRunClick
         )
 
         GameMenuButton(

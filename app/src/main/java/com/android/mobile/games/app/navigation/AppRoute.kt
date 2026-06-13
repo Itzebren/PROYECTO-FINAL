@@ -11,4 +11,7 @@ sealed class AppRoute(val route: String) {
             return "fruit_ninja_game/$difficulty/$username"
         }
     }
+
+    data object LaRazaRunMenu : AppRoute("la_raza_run_menu")
+    data object LaRazaRunGame : AppRoute("la_raza_run_game")
 }
