@@ -3,6 +3,7 @@ package com.android.mobile.games.app.games.razarun.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
@@ -18,40 +19,43 @@ import com.android.mobile.games.app.games.razarun.util.RazaAssetMapper
 fun RazaCanvas(
     state: RazaGameState
 ) {
+    // Load background images (imageResource is already @Composable and handles its own caching)
     val inicioImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_inicio)
     val fondoImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_fondo)
     val finImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_fin)
     
-    // Preload player images at top level
+    // Load player images
     val run1 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_correr1)
     val run2 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_correr2)
     val run3 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_correr3)
     val run4 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_correr4)
     val run5 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_correr5)
-    val playerRunFrames = listOf(run1, run2, run3, run4, run5)
+    val playerRunFrames = remember(run1, run2, run3, run4, run5) { listOf(run1, run2, run3, run4, run5) }
 
     val jump1 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_saltar1)
     val jump2 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_saltar2)
     val jump3 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_saltar3)
     val jump4 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_saltar4)
-    val playerJumpFrames = listOf(jump1, jump2, jump3, jump4)
+    val playerJumpFrames = remember(jump1, jump2, jump3, jump4) { listOf(jump1, jump2, jump3, jump4) }
 
     val slide1 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_deslizar1)
     val slide2 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_deslizar2)
     val slide3 = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_deslizar3)
-    val playerSlideFrames = listOf(slide1, slide2, slide3)
+    val playerSlideFrames = remember(slide1, slide2, slide3) { listOf(slide1, slide2, slide3) }
 
-    // Preload obstacles
+    // Load obstacles
     val carritoImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_carrito)
     val mochilaImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_mochilas)
     val charcoImg = ImageBitmap.imageResource(id = com.android.mobile.games.app.R.drawable.raza_charco)
 
-    val playerImg = when (state.playerAction) {
-        RazaPlayerAction.RUN -> playerRunFrames[(state.animationFrame % 5)]
-        RazaPlayerAction.JUMP -> playerJumpFrames[(state.animationFrame % 4)]
-        RazaPlayerAction.SLIDE -> playerSlideFrames[(state.animationFrame % 3)]
-        RazaPlayerAction.CRASH -> playerRunFrames[0]
-        RazaPlayerAction.WIN -> finImg
+    val playerImg = remember(state.playerAction, state.animationFrame, playerRunFrames, playerJumpFrames, playerSlideFrames, finImg) {
+        when (state.playerAction) {
+            RazaPlayerAction.RUN -> playerRunFrames[(state.animationFrame % 5)]
+            RazaPlayerAction.JUMP -> playerJumpFrames[(state.animationFrame % 4)]
+            RazaPlayerAction.SLIDE -> playerSlideFrames[(state.animationFrame % 3)]
+            RazaPlayerAction.CRASH -> playerRunFrames[0]
+            RazaPlayerAction.WIN -> finImg
+        }
     }
     
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -121,14 +125,15 @@ fun RazaCanvas(
         }
         
         // Draw obstacles
+        val scaleY = height / 500f
         state.obstacles.forEach { obs ->
             val obsImg = when (obs.type) {
                 RazaObstacleType.CARRETO -> carritoImg
                 RazaObstacleType.MOCHILA -> mochilaImg
                 RazaObstacleType.CHARCO -> charcoImg
             }
-            // Align obstacles to the ground (around height * 0.75)
-            val obsY = if (obs.type == RazaObstacleType.CARRETO) height * 0.65f else height * 0.75f
+            // Use the Y from the engine, scaled to screen height
+            val obsY = obs.y * scaleY
             drawImage(
                 image = obsImg,
                 dstSize = IntSize(obs.width.toInt(), obs.height.toInt()),
@@ -137,11 +142,17 @@ fun RazaCanvas(
         }
         
         // Draw player
-        val playerY = if (state.playerAction == RazaPlayerAction.JUMP) height * 0.5f else height * 0.7f
+        val basePlayerY = when (state.playerAction) {
+            RazaPlayerAction.JUMP -> 250f
+            RazaPlayerAction.SLIDE -> 390f
+            else -> 350f
+        }
+        val playerCanvasY = basePlayerY * scaleY
+        
         drawImage(
             image = playerImg,
             dstSize = IntSize(200, 200),
-            dstOffset = IntOffset(100, playerY.toInt())
+            dstOffset = IntOffset(150, playerCanvasY.toInt()) // Match engine playerX=150
         )
     }
 }

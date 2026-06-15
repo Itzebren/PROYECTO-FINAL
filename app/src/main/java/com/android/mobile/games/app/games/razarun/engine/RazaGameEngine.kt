@@ -74,14 +74,20 @@ class RazaGameEngine(
         // Update obstacles
         val updatedObstacles = currentState.obstacles.map { 
             it.copy(x = it.x - currentState.currentSpeed * deltaTime * 100) // 100 pixels per meter roughly
-        }.filter { it.x + it.width > 0 }
+        }.filter { it.x + it.width > -200f } // Give more buffer for off-screen removal
 
-        // Spawn obstacles
-        val finalObstacles = if (updatedObstacles.size < 3 && Random.nextFloat() < 0.02f) {
+        // Spawn obstacles with minimum distance
+        val MIN_DISTANCE = 450f // Pixels between obstacles
+        val lastObsX = updatedObstacles.maxOfOrNull { it.x } ?: -1f
+        
+        val finalObstacles = if (updatedObstacles.size < 3 && (lastObsX < (1000f - MIN_DISTANCE)) && Random.nextFloat() < 0.05f) {
             val type = RazaObstacleType.entries.random()
+            // CARRETO (Carrito de dulces) is high: slide under it
+            // CHARCO and MOCHILA are low: jump over them
+            val obsY = if (type == RazaObstacleType.CARRETO) 250f else 350f
             updatedObstacles + RazaObstacle(
                 x = 1000f, // Start off-screen
-                y = if (type == RazaObstacleType.CARRETO) 150f else 350f,
+                y = obsY,
                 type = type
             )
         } else {
@@ -109,20 +115,25 @@ class RazaGameEngine(
     }
 
     private fun checkCollisions(playerAction: RazaPlayerAction, obstacles: List<RazaObstacle>): Boolean {
-        val playerX = 100f
-        val playerY = 350f
-        val playerWidth = 80f
-        val playerHeight = if (playerAction == RazaPlayerAction.SLIDE) 40f else 80f
-        val effectivePlayerY = if (playerAction == RazaPlayerAction.SLIDE) 390f else if (playerAction == RazaPlayerAction.JUMP) 250f else 350f
+        val playerX = 150f // Player is a bit further in
+        val playerBaseY = 350f
+        val playerWidth = 60f // Slightly narrower hit box
+        
+        // Collision box for player
+        val (playerY, playerHeight) = when (playerAction) {
+            RazaPlayerAction.JUMP -> 250f to 80f
+            RazaPlayerAction.SLIDE -> 390f to 40f
+            else -> 350f to 80f
+        }
 
         return obstacles.any { obs ->
-            val obsX = obs.x
-            val obsY = obs.y
-            val obsWidth = obs.width
-            val obsHeight = obs.height
+            val obsX = obs.x + 20f // Margin for obstacle image
+            val obsY = obs.y + 20f
+            val obsWidth = obs.width - 40f
+            val obsHeight = obs.height - 20f
 
             val collisionX = playerX < obsX + obsWidth && playerX + playerWidth > obsX
-            val collisionY = effectivePlayerY < obsY + obsHeight && effectivePlayerY + playerHeight > obsY
+            val collisionY = playerY < obsY + obsHeight && playerY + playerHeight > obsY
 
             collisionX && collisionY
         }

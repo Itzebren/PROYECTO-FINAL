@@ -32,7 +32,6 @@ fun MainMenuScreen(
     onCodeSlasherClick: () -> Unit,
     onLaRazaRunClick: () -> Unit,
     onCatchGameClick: () -> Unit,
-    onRunnerGameClick: () -> Unit,
     onFruitMergeClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -153,15 +152,6 @@ fun MainMenuScreen(
                 description = "¡Sobrevive las 18 semanas en la ESCOM recolectando café y útiles de ingeniería!",
                 color = CuteLavender,
                 onClick = onCatchGameClick
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            GameMenuButton(
-                title = "🦖 Code Runner ☁️",
-                description = "¡Salta las nubecitas y cactus del desierto pastel!",
-                color = CuteSkyBlue,
-                onClick = onRunnerGameClick
             )
 
             Spacer(modifier = Modifier.height(16.dp))
