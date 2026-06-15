@@ -2,6 +2,7 @@ package com.android.mobile.games.app.games.fruitninja.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
@@ -14,12 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
+import com.android.mobile.games.app.ui.theme.*
 
 @Composable
 fun FruitNinjaHud(
@@ -30,35 +31,37 @@ fun FruitNinjaHud(
     difficulty: FruitNinjaDifficulty,
     modifier: Modifier = Modifier
 ) {
-    val pixelStyle = TextStyle(
-        fontFamily = FontFamily.Monospace,
+    val hudTextStyle = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        color = Color.White,
-        shadow = Shadow(color = Color(0xFFD100FF), blurRadius = 8f)
+        fontSize = 18.sp,
+        color = TextDark,
+        shadow = Shadow(color = CutePink.copy(alpha = 0.8f), blurRadius = 4f)
     )
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFF6A1B9A).copy(alpha = 0.7f)) // Lila Code Slasher
             .statusBarsPadding()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(CuteCream.copy(alpha = 0.9f))
+            .border(2.dp, CutePink, RoundedCornerShape(20.dp))
+            .padding(14.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "PUNTAJE: ${score.toString().padStart(6, '0')}", style = pixelStyle)
+                Text(text = "⭐ SCORE: ${score.toString().padStart(6, '0')}", style = hudTextStyle)
                 Text(
-                    text = "RECORD: ${bestScore.toString().padStart(6, '0')}",
-                    style = pixelStyle.copy(fontSize = 12.sp, shadow = null),
-                    color = Color.White.copy(alpha = 0.7f)
+                    text = "👑 BEST: ${bestScore.toString().padStart(6, '0')}",
+                    style = hudTextStyle.copy(fontSize = 12.sp, shadow = null),
+                    color = TextDark.copy(alpha = 0.7f)
                 )
             }
 
-            // Vasos de Café (Vidas)
+            // Vasos de Café (Vidas) - super cute spacing
             if (difficulty.hasLives) {
                 Row(
                     horizontalArrangement = Arrangement.End,
@@ -69,8 +72,8 @@ fun FruitNinjaHud(
                             painter = painterResource(if (i < lives) R.drawable.cafe_con_vida else R.drawable.cafe_menos_vida),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(50.dp) // <--- Tamaño equilibrado para que quepan los 3
-                                .padding(horizontal = 2.dp)
+                                .size(36.dp)
+                                .padding(horizontal = 1.dp)
                         )
                     }
                 }
@@ -78,15 +81,15 @@ fun FruitNinjaHud(
         }
 
         if (difficulty.hasTimer) {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             LinearProgressIndicator(
                 progress = { timeRemainingSeconds / 60f },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
+                    .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = Color(0xFFFF00FF), // Rosa neón
-                trackColor = Color.White.copy(alpha = 0.2f)
+                color = CutePink,
+                trackColor = CuteLavender.copy(alpha = 0.3f)
             )
         }
     }
