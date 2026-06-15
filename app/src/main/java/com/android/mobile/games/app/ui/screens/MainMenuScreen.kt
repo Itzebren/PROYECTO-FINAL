@@ -32,75 +32,16 @@ fun MainMenuScreen(
     onCodeSlasherClick: () -> Unit,
     onLaRazaRunClick: () -> Unit,
     onCatchGameClick: () -> Unit,
-    onFruitMergeClick: () -> Unit
+    onCodeMergeClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-
-    val floatItems = remember {
-        List(25) {
-            FloatItem(
-                x = Random.nextFloat(),
-                y = Random.nextFloat(),
-                size = Random.nextFloat() * 16f + 8f,
-                speed = Random.nextFloat() * 0.4f + 0.1f,
-                isHeart = Random.nextBoolean(),
-                color = when (Random.nextInt(4)) {
-                    0 -> CutePink.copy(alpha = 0.35f)
-                    1 -> CuteLavender.copy(alpha = 0.35f)
-                    2 -> CuteBlue.copy(alpha = 0.35f)
-                    else -> CuteYellow.copy(alpha = 0.35f)
-                }
-            )
-        }
-    }
-
-    val time by rememberInfiniteTransition(label = "kawaii_bg")
-        .animateFloat(
-            initialValue = 0f,
-            targetValue = 1000f,
-            animationSpec = infiniteRepeatable(tween(40_000, easing = LinearEasing)),
-            label = "time"
-        )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFFFFF0F5),
-                        Color(0xFFFFE4E1),
-                        Color(0xFFE6E6FA)
-                    )
-                )
-            ),
+            .background(CuteCream),
         contentAlignment = Alignment.TopCenter
     ) {
-        val heartPath = remember { Path() }
-        Canvas(Modifier.fillMaxSize()) {
-            floatItems.forEach { item ->
-                val yy = ((item.y - time * item.speed * 0.001f) % 1.0f + 1.0f) % 1.0f
-                val xx = item.x * size.width
-                val yPos = yy * size.height
-                val bounce = sin(time * 0.02f + xx) * 6f
-
-                if (item.isHeart) {
-                    drawHeart(
-                        path = heartPath,
-                        center = Offset(xx, yPos + bounce),
-                        size = item.size * 1.5f,
-                        color = item.color
-                    )
-                } else {
-                    drawCircle(
-                        color = item.color,
-                        radius = item.size,
-                        center = Offset(xx, yPos + bounce)
-                    )
-                }
-            }
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -157,10 +98,10 @@ fun MainMenuScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             GameMenuButton(
-                title = "🍉 Suika Merge 🍓",
-                description = "¡Combina las frutas tiernas para crear una sandía gigante!",
+                title = "💻 Code Merge 🚀",
+                description = "¡Fusiona el código hasta compilar tu proyecto final!",
                 color = CutePeach,
-                onClick = onFruitMergeClick
+                onClick = onCodeMergeClick
             )
 
             Spacer(modifier = Modifier.height(32.dp))

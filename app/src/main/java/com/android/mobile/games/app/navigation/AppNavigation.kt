@@ -10,10 +10,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
 import com.android.mobile.games.app.games.catchgame.ui.CatchGameMenuScreen
 import com.android.mobile.games.app.games.catchgame.ui.CatchGameScreen
-import com.android.mobile.games.app.games.fruitmerge.ui.FruitMergeScreen
+import com.android.mobile.games.app.games.codemerge.data.MockCodeMergeGameService
+import com.android.mobile.games.app.games.codemerge.engine.CodeMergeViewModel
+import com.android.mobile.games.app.games.codemerge.ui.CodeMergeScreen
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaMenuScreen
 import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaScreen
@@ -31,6 +35,9 @@ fun AppNavigation() {
         mutableStateOf(CatchGameDifficulty.EASY)
     }
 
+    // Initialize Service (Single instance for the app)
+    val codeMergeService = remember { MockCodeMergeGameService() }
+
     NavHost(
         navController = navController,
         startDestination = AppRoute.MainMenu.route
@@ -42,12 +49,12 @@ fun AppNavigation() {
                 },
                 onLaRazaRunClick = {
                     navController.navigate(AppRoute.LaRazaRunMenu.route)
-                }, // <- Aquí faltaba cerrar
+                },
                 onCatchGameClick = {
                     navController.navigate(AppRoute.CatchGameMenu.route)
                 },
-                onFruitMergeClick = {
-                    navController.navigate(AppRoute.FruitMergeGame.route)
+                onCodeMergeClick = {
+                    navController.navigate(AppRoute.CodeMergeGame.route)
                 }
             )
         }
@@ -97,9 +104,21 @@ fun AppNavigation() {
             )
         }
 
-        composable(AppRoute.FruitMergeGame.route) {
-            FruitMergeScreen(
-                onBackToMenuClick = {
+        composable(AppRoute.CodeMergeGame.route) {
+            val viewModel: CodeMergeViewModel = viewModel(
+                factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return CodeMergeViewModel(codeMergeService) as T
+                    }
+                }
+            )
+            val state by viewModel.state.collectAsState()
+            
+            CodeMergeScreen(
+                state = state,
+                onIntent = { viewModel.handleIntent(it) },
+                onBackClick = {
                     navController.popBackStack()
                 }
             )

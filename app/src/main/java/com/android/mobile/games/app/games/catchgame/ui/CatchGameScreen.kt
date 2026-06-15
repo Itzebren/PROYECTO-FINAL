@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -35,6 +36,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.android.mobile.games.app.games.catchgame.model.TriviaQuestion
+
 @Composable
 fun CatchGameScreen(
     difficulty: CatchGameDifficulty,
@@ -52,8 +57,14 @@ fun CatchGameScreen(
         .getBestScore(difficulty)
         .collectAsState(initial = 0)
 
-    val questions = remember {
-        TriviaJsonLoader.loadQuestions(context)
+    var questions by    remember {
+        mutableStateOf<List<TriviaQuestion>>(emptyList())
+    }
+
+    LaunchedEffect(Unit) {
+        questions = withContext(Dispatchers.IO) {
+            TriviaJsonLoader.loadQuestions(context)
+        }
     }
 
     val triviaRepository = remember(questions) {
@@ -64,12 +75,23 @@ fun CatchGameScreen(
         mutableIntStateOf(0)
     }
 
-    val controller = remember(difficulty, sessionId) {
-        triviaRepository.resetSession()
-        CatchGameController(
-            difficulty = difficulty,
-            triviaRepository = triviaRepository
-        )
+    val controller = remember(difficulty, sessionId, questions) {
+        if (questions.isNotEmpty()) {
+            triviaRepository.resetSession()
+            CatchGameController(
+                difficulty = difficulty,
+                triviaRepository = triviaRepository
+            )
+        } else {
+            null
+        }
+    }
+
+    if (controller == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+             androidx.compose.material3.CircularProgressIndicator(color = com.android.mobile.games.app.ui.theme.CutePink)
+        }
+        return
     }
 
     val uiState = controller.uiState

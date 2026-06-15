@@ -8,7 +8,7 @@ sealed class AppRoute(val route: String) {
 
     data object CatchGame : AppRoute("catch_game")
 
-    data object FruitMergeGame : AppRoute("fruit_merge_game")
+    data object CodeMergeGame : AppRoute("code_merge_game")
 
     data object FruitNinjaMenu : AppRoute("fruit_ninja_menu")
 
