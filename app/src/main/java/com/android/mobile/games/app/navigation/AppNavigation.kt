@@ -19,7 +19,7 @@ import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaMenuScreen
 import com.android.mobile.games.app.games.fruitninja.ui.FruitNinjaScreen
 import com.android.mobile.games.app.games.razarun.ui.RazaMenuScreen
 import com.android.mobile.games.app.games.razarun.ui.RazaScreen
-import com.android.mobile.games.app.games.runner.ui.RunnerScreen
+
 import com.android.mobile.games.app.ui.screens.MainMenuScreen
 
 private const val DIFFICULTY_ARGUMENT = "difficulty"
@@ -47,9 +47,7 @@ fun AppNavigation() {
                 onCatchGameClick = {
                     navController.navigate(AppRoute.CatchGameMenu.route)
                 },
-                onRunnerGameClick = {
-                    navController.navigate(AppRoute.RunnerGame.route)
-                },
+
                 onFruitMergeClick = {
                     navController.navigate(AppRoute.FruitMergeGame.route)
                 }
@@ -101,13 +99,6 @@ fun AppNavigation() {
             )
         }
 
-        composable(AppRoute.RunnerGame.route) {
-            RunnerScreen(
-                onBackToMenuClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
 
         composable(AppRoute.FruitMergeGame.route) {
             FruitMergeScreen(
