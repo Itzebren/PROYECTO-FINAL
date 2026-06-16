@@ -15,6 +15,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
 import com.android.mobile.games.app.games.catchgame.ui.CatchGameMenuScreen
 import com.android.mobile.games.app.games.catchgame.ui.CatchGameScreen
+import com.android.mobile.games.app.games.catchgame.data.ICatchGameService
+import com.android.mobile.games.app.games.catchgame.data.RetrofitCatchGameService
 import com.android.mobile.games.app.games.codemerge.data.MockCodeMergeGameService
 import com.android.mobile.games.app.games.codemerge.engine.CodeMergeViewModel
 import com.android.mobile.games.app.games.codemerge.ui.CodeMergeScreen
@@ -34,9 +36,13 @@ fun AppNavigation() {
     var catchGameDifficulty by remember {
         mutableStateOf(CatchGameDifficulty.EASY)
     }
+    var catchGameUsername by remember {
+        mutableStateOf("")
+    }
 
-    // Initialize Service (Single instance for the app)
+    // Initialize Services (Single instances for the app)
     val codeMergeService = remember { MockCodeMergeGameService() }
+    val catchGameService: ICatchGameService = remember { RetrofitCatchGameService() }
 
     NavHost(
         navController = navController,
@@ -77,11 +83,15 @@ fun AppNavigation() {
                 onDifficultySelected = { difficulty ->
                     catchGameDifficulty = difficulty
                 },
-                onStartGameClick = {
+                onStartGameClick = { username ->
+                    catchGameUsername = username
                     navController.navigate(AppRoute.CatchGame.route)
                 },
                 onBackClick = {
                     navController.popBackStack()
+                },
+                rankingLoader = { difficulty, limit ->
+                    catchGameService.getRankings(difficulty = difficulty, limit = limit)
                 }
             )
         }
@@ -98,6 +108,8 @@ fun AppNavigation() {
         composable(AppRoute.CatchGame.route) {
             CatchGameScreen(
                 difficulty = catchGameDifficulty,
+                username = catchGameUsername,
+                gameService = catchGameService,
                 onBackToMenuClick = {
                     navController.popBackStack()
                 }

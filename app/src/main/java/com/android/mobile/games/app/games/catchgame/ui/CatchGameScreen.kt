@@ -31,6 +31,7 @@ import com.android.mobile.games.app.games.catchgame.data.CatchGameScoreRepositor
 import com.android.mobile.games.app.games.catchgame.data.TriviaJsonLoader
 import com.android.mobile.games.app.games.catchgame.data.TriviaRepository
 import com.android.mobile.games.app.games.catchgame.engine.CatchGameController
+import com.android.mobile.games.app.games.catchgame.data.ICatchGameService
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,6 +44,8 @@ import com.android.mobile.games.app.games.catchgame.model.TriviaQuestion
 @Composable
 fun CatchGameScreen(
     difficulty: CatchGameDifficulty,
+    username: String,
+    gameService: ICatchGameService,
     onBackToMenuClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -143,10 +146,19 @@ fun CatchGameScreen(
 
     LaunchedEffect(uiState.isGameOver) {
         if (uiState.isGameOver) {
+            // 1. Guardado local — sigue funcionando igual que antes
             scoreRepository.saveBestScoreIfNeeded(
                 difficulty = difficulty,
                 score = uiState.score
             )
+            // 2. Envío al servidor — fallo silencioso si no hay red
+            if (username.isNotBlank()) {
+                gameService.submitScore(
+                    username = username,
+                    score = uiState.score,
+                    difficulty = difficulty.name
+                )
+            }
         }
     }
 
