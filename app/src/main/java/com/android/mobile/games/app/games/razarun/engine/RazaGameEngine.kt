@@ -72,19 +72,66 @@ class RazaGameEngine(
         val newAnimationFrame = (newDistance / (currentState.currentSpeed * frameRate)).toInt()
 
         // Update obstacles
-        val updatedObstacles = currentState.obstacles.map { 
-            it.copy(x = it.x - currentState.currentSpeed * deltaTime * 100) // 100 pixels per meter roughly
-        }.filter { it.x + it.width > -200f } // Give more buffer for off-screen removal
+        // 1. Mover obstáculos existentes
+        val updatedObstacles = currentState.obstacles.map {
+            it.copy(x = it.x - currentState.currentSpeed * deltaTime * 100)
+        }.filter { it.x + it.width > -100f } // Los eliminamos un poco después de salir
 
-        // Spawn obstacles with minimum distance
-        val MIN_DISTANCE = 450f // Pixels between obstacles
+        // 2. LÓGICA DE SPAWN DINÁMICO (Aquí va lo que pediste)
+
+        // Calculamos el progreso del juego (de 0.0 a 1.0)
+        val progress = (newDistance / GOAL_DISTANCE).coerceIn(0f, 1f)
+
+        // Probabilidad: inicia en 1.5% y sube hasta 4% según el progreso
+        val spawnProbability = 0.015f + (progress * 0.025f)
+
+        // Separación mínima: al principio pedimos 800px de espacio, al final solo 400px
+        val minDistanceBetween = 800f - (progress * 400f)
+
+        // Verificamos dónde está el último obstáculo creado
+        val lastObstacleX = updatedObstacles.maxOfOrNull { it.x } ?: -1f
+
+        // Condición para crear uno nuevo:
+        // - Que haya espacio suficiente (minDistanceBetween)
+        // - Máximo 3 en pantalla
+        // - Que la suerte (Random) lo decida
+        val finalObstacles = if (lastObstacleX < (1000f - minDistanceBetween) &&
+            updatedObstacles.size < 3 &&
+            Random.nextFloat() < spawnProbability) {
+
+            val type = RazaObstacleType.entries.random()
+
+            // AJUSTE DE ALTURAS:
+            // Carrito: 280f (obstáculo alto para deslizarse)
+            // Otros: 350f (obstáculo bajo para saltar)
+            val obsY = if (type == RazaObstacleType.CARRETO) 310f else 370f
+
+            updatedObstacles + RazaObstacle(
+                x = 1100f, // Aparece un poco fuera de la pantalla por la derecha
+                y = obsY,
+                type = type
+            )
+        } else {
+            updatedObstacles
+        }
+
+        /* val updatedObstacles = currentState.obstacles.map {
+             it.copy(x = it.x - currentState.currentSpeed * deltaTime * 100) // 100 pixels per meter roughly
+         }.filter { it.x + it.width > -200f } // Give more buffer for off-screen removal
+
+         // Spawn obstacles with dynamic distance and probability
+         val progress = currentState.distance / GOAL_DISTANCE
+         val minDistance = 800f - (progress * 500f) // From 800 to 300
+         val spawnChance = 0.02f + (progress * 0.08f) // From 2% to 10%
+        
         val lastObsX = updatedObstacles.maxOfOrNull { it.x } ?: -1f
         
-        val finalObstacles = if (updatedObstacles.size < 3 && (lastObsX < (1000f - MIN_DISTANCE)) && Random.nextFloat() < 0.05f) {
+        val finalObstacles = if (updatedObstacles.size < 4 && (lastObsX < (1000f - minDistance)) && Random.nextFloat() < spawnChance) {
             val type = RazaObstacleType.entries.random()
-            // CARRETO (Carrito de dulces) is high: slide under it
-            // CHARCO and MOCHILA are low: jump over them
-            val obsY = if (type == RazaObstacleType.CARRETO) 250f else 350f
+            // CARRETO (Carrito de dulces) is a bit higher: must slide under it
+            // CHARCO and MOCHILA are at ground level: must jump over them
+            // Ground level is roughly 430f (bottom). Obstacles are 100f high.
+            val obsY = if (type == RazaObstacleType.CARRETO) 280f else 350f // Nivel de obstaculos
             updatedObstacles + RazaObstacle(
                 x = 1000f, // Start off-screen
                 y = obsY,
@@ -92,7 +139,7 @@ class RazaGameEngine(
             )
         } else {
             updatedObstacles
-        }
+        }*/
 
         // Check collisions
         val hasCollision = checkCollisions(currentState.playerAction, finalObstacles)
@@ -121,8 +168,8 @@ class RazaGameEngine(
         
         // Collision box for player
         val (playerY, playerHeight) = when (playerAction) {
-            RazaPlayerAction.JUMP -> 250f to 80f
-            RazaPlayerAction.SLIDE -> 390f to 40f
+            RazaPlayerAction.JUMP -> 260f to 80f
+            RazaPlayerAction.SLIDE -> 410f to 40f
             else -> 350f to 80f
         }
 
