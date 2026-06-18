@@ -16,11 +16,13 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import androidx.compose.ui.platform.LocalContext
 import com.android.mobile.games.app.games.razarun.engine.RazaGameEngine
+import com.android.mobile.games.app.ui.util.HideSystemBars
 
 @Composable
 fun RazaScreen(
     onBackToMenuClick: () -> Unit
 ) {
+    HideSystemBars()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val engine = remember { RazaGameEngine(scope) }

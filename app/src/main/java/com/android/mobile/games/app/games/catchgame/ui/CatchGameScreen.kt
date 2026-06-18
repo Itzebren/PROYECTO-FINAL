@@ -40,6 +40,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.android.mobile.games.app.games.catchgame.model.TriviaQuestion
+import com.android.mobile.games.app.ui.util.HideSystemBars
 
 @Composable
 fun CatchGameScreen(
@@ -48,6 +49,7 @@ fun CatchGameScreen(
     gameService: ICatchGameService,
     onBackToMenuClick: () -> Unit
 ) {
+    HideSystemBars()
     val context = LocalContext.current
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()

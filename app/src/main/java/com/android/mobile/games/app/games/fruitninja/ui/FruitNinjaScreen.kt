@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 import com.android.mobile.games.app.games.fruitninja.data.RetrofitGameService
+import com.android.mobile.games.app.ui.util.HideSystemBars
 
 @Composable
 fun FruitNinjaScreen(
@@ -28,6 +29,7 @@ fun FruitNinjaScreen(
     username: String,
     onBackToMenuClick: () -> Unit
 ) {
+    HideSystemBars()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 

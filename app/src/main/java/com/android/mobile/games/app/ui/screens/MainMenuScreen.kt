@@ -1,9 +1,8 @@
 package com.android.mobile.games.app.ui.screens
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,18 +13,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.mobile.games.app.R
 import com.android.mobile.games.app.ui.theme.*
-import kotlin.math.sin
-import kotlin.random.Random
+
+private val NeonCyan   = Color(0xFF00F5FF)
+private val NeonPurple = Color(0xFFBF00FF)
+private val DarkBg     = Color(0xFF0D0221)
+private val DarkCard   = Color(0xFF1B065E)
 
 @Composable
 fun MainMenuScreen(
@@ -36,174 +41,177 @@ fun MainMenuScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CuteCream),
-        contentAlignment = Alignment.TopCenter
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.bg_menu),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            DarkBg.copy(alpha = 0.92f),
+                            DarkBg.copy(alpha = 0.75f),
+                            DarkBg.copy(alpha = 0.92f)
+                        )
+                    )
+                )
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .verticalScroll(scrollState)
-                .padding(horizontal = 24.dp, vertical = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "🌸 KAWAII ARCADE 🎀",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = TextDark,
+                text = "THE LAST DICTAMEN",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = NeonCyan,
+                    letterSpacing = 2.sp,
+                    shadow = Shadow(
+                        color = NeonCyan.copy(alpha = 0.65f),
+                        offset = Offset(0f, 0f),
+                        blurRadius = 18f
+                    )
+                ),
                 textAlign = TextAlign.Center
             )
 
             Text(
-                text = "¡Elige un minijuego súper lindo!",
-                color = TextDark.copy(alpha = 0.7f),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                text = "Minijuegos del Politécnico",
+                color = Color.White.copy(alpha = 0.55f),
+                fontSize = 13.sp,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(top = 6.dp, bottom = 32.dp)
             )
 
-            GameMenuButton(
-                title = "🗡️ Code Slasher 🎀",
-                description = "¡Corta los bugs molestos con estilo mágico!",
-                color = CutePink,
+            GameCard(
+                title = "CODE SLASHER",
+                emoji = "🗡️",
+                description = "Corta los bugs y errores con tu espada",
+                accentColor = CutePink,
                 onClick = onCodeSlasherClick
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            GameMenuButton(
-                title = "🚇 La Raza Run 🏃‍♀️",
-                description = "¡Corre por el Transbordo de la Ciencia y llega a clase antes de que el tiempo se agote!",
-                color = CuteYellow,
+            GameCard(
+                title = "LA RAZA RUN",
+                emoji = "🏃",
+                iconRes = R.drawable.raza_correr5,
+                description = "Corre por el Transbordo de la Ciencia antes de que el tiempo se agote",
+                accentColor = Color(0xFFFF5252),
                 onClick = onLaRazaRunClick
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            GameMenuButton(
-                title = "📜 The Last Dictamen ⚖️",
-                description = "¡Sobrevive las 18 semanas en la ESCOM recolectando café y útiles de ingeniería!",
-                color = CuteLavender,
+            GameCard(
+                title = "THE LAST DICTAMEN",
+                emoji = "📜",
+                iconRes = R.drawable.ets,
+                description = "Sobrevive las 18 semanas en la ESCOM recolectando café y útiles",
+                accentColor = Color(0xFFFFD600),
                 onClick = onCatchGameClick
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            GameMenuButton(
-                title = "💻 Code Merge 🚀",
-                description = "¡Fusiona el código hasta compilar tu proyecto final!",
-                color = CutePeach,
+            GameCard(
+                title = "CODE MERGE",
+                emoji = "💻",
+                iconRes = R.drawable.proyecto_compilado,
+                description = "Fusiona el código hasta compilar tu proyecto final",
+                accentColor = NeonCyan,
                 onClick = onCodeMergeClick
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
         }
     }
 }
 
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawHeart(
-    path: Path,
-    center: Offset,
-    size: Float,
-    color: Color
-) {
-    path.reset()
-    val width = size
-    val height = size
-    val x = center.x - width / 2
-    val y = center.y - height / 2
-
-    path.moveTo(x + width / 2, y + height / 5)
-    path.cubicTo(x + width * 5 / 6, y - height / 10, x + width * 5 / 4, y + height / 3, x + width / 2, y + height * 9 / 10)
-    path.cubicTo(x - width / 4, y + height / 3, x + width / 6, y - height / 10, x + width / 2, y + height / 5)
-    path.close()
-
-    drawPath(path = path, color = color)
-}
-
 @Composable
-private fun GameMenuButton(
+private fun GameCard(
     title: String,
+    emoji: String,
     description: String,
-    color: Color,
-    onClick: () -> Unit
+    accentColor: Color,
+    onClick: () -> Unit,
+    iconRes: Int? = null
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(24.dp),
-                ambientColor = color.copy(alpha = 0.5f),
-                spotColor = color
-            )
-            .border(2.dp, Color.White, RoundedCornerShape(24.dp))
-            .clip(RoundedCornerShape(24.dp))
             .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = CuteCream.copy(alpha = 0.9f)
-        )
+            containerColor = DarkCard.copy(alpha = 0.88f)
+        ),
+        border = BorderStroke(1.5.dp, accentColor.copy(alpha = 0.75f))
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(accentColor.copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(color)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                if (iconRes != null) {
+                    Image(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    Text(emoji, fontSize = 26.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = TextDark
+                    fontWeight = FontWeight.ExtraBold,
+                    color = accentColor,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.8.sp
+                )
+                Text(
+                    text = description,
+                    color = Color.White.copy(alpha = 0.70f),
+                    fontSize = 12.sp,
+                    lineHeight = 17.sp,
+                    modifier = Modifier.padding(top = 3.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.width(10.dp))
 
             Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextDark.copy(alpha = 0.8f),
-                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                text = "▶",
+                color = accentColor,
+                fontSize = 16.sp
             )
-
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color,
-                    contentColor = TextDark
-                ),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "¡Jugar! ✨",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp
-                )
-            }
         }
     }
 }
-
-private data class FloatItem(
-    val x: Float,
-    val y: Float,
-    val size: Float,
-    val speed: Float,
-    val isHeart: Boolean,
-    val color: Color
-)

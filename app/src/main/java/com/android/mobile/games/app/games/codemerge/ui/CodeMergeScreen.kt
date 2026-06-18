@@ -24,6 +24,7 @@ import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.codemerge.model.CodeLevel
 import com.android.mobile.games.app.games.codemerge.model.CodeMergeGameState
 import com.android.mobile.games.app.games.codemerge.model.CodeMergeIntent
+import com.android.mobile.games.app.ui.util.HideSystemBars
 
 @Composable
 fun CodeMergeScreen(
@@ -31,6 +32,7 @@ fun CodeMergeScreen(
     onIntent: (CodeMergeIntent) -> Unit,
     onBackClick: () -> Unit
 ) {
+    HideSystemBars()
     val nuloImg = ImageBitmap.imageResource(id = R.drawable.nulo)
     val bugImg = ImageBitmap.imageResource(id = R.drawable.bug)
     val errorImg = ImageBitmap.imageResource(id = R.drawable.error)

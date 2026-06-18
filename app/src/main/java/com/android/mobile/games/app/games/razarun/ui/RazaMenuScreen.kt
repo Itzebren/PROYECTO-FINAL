@@ -20,12 +20,14 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import androidx.compose.ui.platform.LocalContext
 import com.android.mobile.games.app.R
+import com.android.mobile.games.app.ui.util.HideSystemBars
 
 @Composable
 fun RazaMenuScreen(
     onStartGameClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    HideSystemBars()
     var showHelp by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {

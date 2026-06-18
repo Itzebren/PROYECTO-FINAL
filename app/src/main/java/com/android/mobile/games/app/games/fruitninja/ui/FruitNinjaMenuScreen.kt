@@ -22,6 +22,7 @@ import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import com.android.mobile.games.app.games.fruitninja.data.RetrofitGameService
 import com.android.mobile.games.app.ui.theme.*
+import com.android.mobile.games.app.ui.util.HideSystemBars
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,6 +30,7 @@ fun FruitNinjaMenuScreen(
     onStartGameClick: (FruitNinjaDifficulty, String) -> Unit,
     onBackClick: () -> Unit
 ) {
+    HideSystemBars()
     var selectedDifficulty by remember { mutableStateOf(FruitNinjaDifficulty.SAVE_SEMESTER) }
     var username by remember { mutableStateOf("") }
     var showHelpModal by remember { mutableStateOf(false) }

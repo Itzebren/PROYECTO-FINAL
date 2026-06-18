@@ -24,6 +24,7 @@ import com.android.mobile.games.app.R
 import com.android.mobile.games.app.games.catchgame.data.CatchGameRankingEntry
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
 import com.android.mobile.games.app.ui.theme.*
+import com.android.mobile.games.app.ui.util.HideSystemBars
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,6 +35,7 @@ fun CatchGameMenuScreen(
     onBackClick: () -> Unit,
     rankingLoader: suspend (difficulty: String?, limit: Int) -> List<CatchGameRankingEntry>
 ) {
+    HideSystemBars()
     var username by remember { mutableStateOf("") }
     var showRankingModal by remember { mutableStateOf(false) }
     var rankingData by remember { mutableStateOf<List<CatchGameRankingEntry>>(emptyList()) }
