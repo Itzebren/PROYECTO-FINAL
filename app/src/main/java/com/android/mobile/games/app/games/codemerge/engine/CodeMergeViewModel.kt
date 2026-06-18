@@ -69,6 +69,15 @@ class CodeMergeViewModel(
         }
     }
 
+    private fun getWeightedRandomLevel(): CodeLevel {
+        val rand = Random.nextFloat()
+        return when {
+            rand < 0.60f -> CodeLevel.NULO   // 60%
+            rand < 0.90f -> CodeLevel.BUG    // 30%
+            else -> CodeLevel.ERROR          // 10%
+        }
+    }
+
     private fun dropElement() {
         val currentState = _state.value
         if (currentState.isGameOver || currentState.isVictory) return
@@ -79,12 +88,10 @@ class CodeMergeViewModel(
             level = currentState.nextLevel
         )
         
-        val nextLevel = CodeLevel.entries.filter { it.ordinal <= 2 }.random()
-        
         _state.update { 
             it.copy(
                 elements = it.elements + newElement,
-                nextLevel = nextLevel
+                nextLevel = getWeightedRandomLevel()
             )
         }
     }
