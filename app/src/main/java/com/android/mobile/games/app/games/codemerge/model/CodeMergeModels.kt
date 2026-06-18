@@ -10,12 +10,12 @@ data class MergeRunResult(
 )
 
 enum class CodeLevel(val score: Int, val radiusScale: Float) {
-    NULO(10, 1.0f),           // Nivel 1: nulo.png
-    BUG(20, 1.2f),            // Nivel 2: bug.png
-    ERROR(30, 1.44f),         // Nivel 3: error.png
-    IPN_CARD(40, 1.73f),      // Nivel 4: ipn_card.png
-    CAFE(50, 2.07f),          // Nivel 5: cafe_con_vida.png
-    PROJECT_COMPLETE(100, 2.48f); // Nivel 6: proyecto_compilado.png
+    NULO(10, 1.5f),           // Nivel 1: nulo.png (30dp)
+    BUG(20, 2.25f),           // Nivel 2: bug.png (+25%)
+    ERROR(30, 3.50f),         // Nivel 3: error.png (+50%)
+    CAFE(50, 4.75f),          // Nivel 4: cafe_con_vida.png (+75%)
+    IPN_CARD(100, 6.0f),      // Nivel 5: ipn_card.png (+100%)
+    PROJECT_COMPLETE(500, 7.0f); // Nivel 6: proyecto_compilado.png (120dp / 30dp = 4x)
 
     fun next(): CodeLevel? = entries.getOrNull(ordinal + 1)
 }

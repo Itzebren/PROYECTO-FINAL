@@ -21,10 +21,11 @@ class CodeMergeViewModel(
     private val _state = MutableStateFlow(CodeMergeGameState())
     val state: StateFlow<CodeMergeGameState> = _state.asStateFlow()
 
-    private val GRAVITY = 0.5f
-    private val BOUNCE = 0.2f
-    private val FRICTION = 0.98f
-    private val BASE_RADIUS = 40f
+    private val GRAVITY = 0.4f
+    private val BOUNCE = 0.1f
+    private val FRICTION = 0.95f
+    private val BASE_RADIUS = 30f
+    private val SLEEP_THRESHOLD = 0.2f
     private val LOSS_LINE_Y = 150f
     private var gameOverTimer = 0L
 
@@ -40,7 +41,9 @@ class CodeMergeViewModel(
                     gameOverTimer = 0L
                 }
                 is CodeMergeIntent.MoveCurrentElement -> {
-                    _state.update { it.copy(currentElementX = intent.x) }
+                    if (!_state.value.isGameOver && !_state.value.isVictory) {
+                        _state.update { it.copy(currentElementX = intent.x) }
+                    }
                 }
                 is CodeMergeIntent.DropElement -> {
                     dropElement()
@@ -67,12 +70,13 @@ class CodeMergeViewModel(
     }
 
     private fun dropElement() {
-        if (_state.value.isGameOver) return
+        val currentState = _state.value
+        if (currentState.isGameOver || currentState.isVictory) return
         
         val newElement = CodeElement(
-            x = _state.value.currentElementX,
+            x = currentState.currentElementX,
             y = 50f,
-            level = _state.value.nextLevel
+            level = currentState.nextLevel
         )
         
         val nextLevel = CodeLevel.entries.filter { it.ordinal <= 2 }.random()
@@ -87,13 +91,15 @@ class CodeMergeViewModel(
 
     private fun updatePhysics() {
         val currentState = _state.value
-        if (currentState.isGameOver) return
+        if (currentState.isGameOver || currentState.isVictory) return
 
         val elements = currentState.elements.toMutableList()
         
         // 1. Apply Gravity and Movement
         for (i in elements.indices) {
             val el = elements[i]
+            if (el.isStatic) continue
+
             val newVy = el.vy + GRAVITY
             val newX = el.x + el.vx
             val newY = el.y + newVy
@@ -106,7 +112,7 @@ class CodeMergeViewModel(
             )
         }
 
-        // 2. Wall Collisions
+        // 2. Wall and Floor Collisions
         for (i in elements.indices) {
             val el = elements[i]
             val radius = BASE_RADIUS * el.level.radiusScale
@@ -115,7 +121,9 @@ class CodeMergeViewModel(
             var ny = el.y
             var nvx = el.vx
             var nvy = el.vy
+            var nIsStatic = el.isStatic
 
+            // Horizontal walls
             if (nx - radius < 0) {
                 nx = radius
                 nvx = -nvx * BOUNCE
@@ -124,17 +132,26 @@ class CodeMergeViewModel(
                 nvx = -nvx * BOUNCE
             }
 
-            if (ny + radius > 1000f) { // Bottom
+            // Floor
+            if (ny + radius > 1000f) {
                 ny = 1000f - radius
                 nvy = -nvy * BOUNCE
-                nvx *= 0.9f // Ground friction
+                nvx *= 0.8f // High friction on floor
+                
+                // Stabilization / Sleep
+                if (nvy.absoluteValue < SLEEP_THRESHOLD && nvx.absoluteValue < SLEEP_THRESHOLD) {
+                    nvy = 0f
+                    nvx = 0f
+                    nIsStatic = true
+                }
             }
 
-            elements[i] = el.copy(x = nx, y = ny, vx = nvx, vy = nvy)
+            elements[i] = el.copy(x = nx, y = ny, vx = nvx, vy = nvy, isStatic = nIsStatic)
         }
 
         // 3. Circle Collisions and Merging
         var scoreAdd = 0
+        var victoryTriggered = false
         val toRemove = mutableSetOf<String>()
         val toAdd = mutableListOf<CodeElement>()
 
@@ -148,39 +165,58 @@ class CodeMergeViewModel(
                 val r2 = BASE_RADIUS * e2.level.radiusScale
                 val dx = e2.x - e1.x
                 val dy = e2.y - e1.y
-                val dist = sqrt(dx * dx + dy * dy)
+                val distSq = dx * dx + dy * dy
                 val minDist = r1 + r2
 
-                if (dist < minDist) {
-                    if (e1.level == e2.level && e1.level != CodeLevel.PROJECT_COMPLETE) {
-                        // MERGE!
-                        toRemove.add(e1.id)
-                        toRemove.add(e2.id)
-                        val nextLvl = e1.level.next()!!
-                        toAdd.add(CodeElement(
-                            x = (e1.x + e2.x) / 2f,
-                            y = (e1.y + e2.y) / 2f,
-                            level = nextLvl
-                        ))
-                        scoreAdd += nextLvl.score
+                if (distSq < minDist * minDist) {
+                    val dist = sqrt(distSq)
+                    if (e1.level == e2.level) {
+                        if (e1.level == CodeLevel.PROJECT_COMPLETE) {
+                            victoryTriggered = true
+                        } else {
+                            // MERGE!
+                            toRemove.add(e1.id)
+                            toRemove.add(e2.id)
+                            val nextLvl = e1.level.next()!!
+                            toAdd.add(CodeElement(
+                                x = (e1.x + e2.x) / 2f,
+                                y = (e1.y + e2.y) / 2f,
+                                level = nextLvl,
+                                vx = 0f,
+                                vy = 0.5f // Slight push down for the new item
+                            ))
+                            scoreAdd += nextLvl.score
+                        }
                     } else {
-                        // Resolve collision
-                        val overlap = minDist - dist
+                        // Resolve collision (Static Resolution)
+                        val overlap = (minDist - dist) + 0.1f // Add tiny buffer to stop vibration
                         val nx = dx / dist
                         val ny = dy / dist
                         
+                        // Push elements apart
+                        val ratio1 = if (e2.isStatic) 1f else 0.5f
+                        val ratio2 = if (e1.isStatic) 1f else 0.5f
+                        
                         elements[i] = elements[i].copy(
-                            x = elements[i].x - nx * overlap / 2f,
-                            y = elements[i].y - ny * overlap / 2f,
-                            vx = elements[i].vx - nx * BOUNCE,
-                            vy = elements[i].vy - ny * BOUNCE
+                            x = elements[i].x - nx * overlap * ratio1,
+                            y = elements[i].y - ny * overlap * ratio1,
+                            vx = elements[i].vx * 0.9f,
+                            vy = elements[i].vy * 0.9f
                         )
                         elements[j] = elements[j].copy(
-                            x = elements[j].x + nx * overlap / 2f,
-                            y = elements[j].y + ny * overlap / 2f,
-                            vx = elements[j].vx + nx * BOUNCE,
-                            vy = elements[j].vy + ny * BOUNCE
+                            x = elements[j].x + nx * overlap * ratio2,
+                            y = elements[j].y + ny * overlap * ratio2,
+                            vx = elements[j].vx * 0.9f,
+                            vy = elements[j].vy * 0.9f
                         )
+                        
+                        // If they are moving very slowly after collision, set to static
+                        if (elements[i].vy.absoluteValue < SLEEP_THRESHOLD && elements[i].vx.absoluteValue < SLEEP_THRESHOLD && elements[i].y > 500f) {
+                            elements[i] = elements[i].copy(isStatic = true, vx = 0f, vy = 0f)
+                        }
+                        if (elements[j].vy.absoluteValue < SLEEP_THRESHOLD && elements[j].vx.absoluteValue < SLEEP_THRESHOLD && elements[j].y > 500f) {
+                            elements[j] = elements[j].copy(isStatic = true, vx = 0f, vy = 0f)
+                        }
                     }
                 }
             }
@@ -192,8 +228,7 @@ class CodeMergeViewModel(
         var isAboveLine = false
         for (el in finalElements) {
             val radius = BASE_RADIUS * el.level.radiusScale
-            // Fix: absoluteValue is a property, not a function
-            if (el.y - radius < LOSS_LINE_Y && el.vy.absoluteValue < 0.1f) {
+            if (el.y - radius < LOSS_LINE_Y && el.vy.absoluteValue < 0.1f && el.y > 100f) {
                 isAboveLine = true
                 break
             }
@@ -214,7 +249,8 @@ class CodeMergeViewModel(
             it.copy(
                 elements = finalElements,
                 currentScore = it.currentScore + scoreAdd,
-                isGameOver = gameOver
+                isGameOver = gameOver,
+                isVictory = victoryTriggered || it.isVictory
             )
         }
     }

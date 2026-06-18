@@ -83,7 +83,7 @@ fun CodeMergeScreen(
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val scaleX = size.width / 1000f
                     val scaleY = size.height / 1000f
-                    val baseRadius = 40f * scaleX
+                    val baseRadius = 30f * scaleX // Base radius 30dp
 
                     // Loss Line
                     drawLine(
@@ -125,6 +125,42 @@ fun CodeMergeScreen(
 
         if (state.isGameOver) {
             GameOverOverlay(score = state.currentScore, onRestart = { onIntent(CodeMergeIntent.StartGame) }, onBack = onBackClick)
+        }
+        
+        if (state.isVictory) {
+            VictoryOverlay(score = state.currentScore, onRestart = { onIntent(CodeMergeIntent.StartGame) }, onBack = onBackClick)
+        }
+    }
+}
+
+@Composable
+fun VictoryOverlay(score: Int, onRestart: () -> Unit, onBack: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.85f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+            Text("¡VICTORIA!", color = Color(0xFF00F5FF), fontSize = 48.sp, fontWeight = FontWeight.ExtraBold)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "¡PROYECTO FINAL APROBADO!\nERES UN MASTER DE LA COMPILACIÓN",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text("Puntaje Final: $score", color = Color(0xFFBF00FF), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(32.dp))
+            androidx.compose.material3.Button(
+                onClick = onRestart,
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFBF00FF))
+            ) {
+                Text("VOLVER A JUGAR", color = Color.White)
+            }
+            androidx.compose.material3.TextButton(onClick = onBack) {
+                Text("VOLVER AL MENÚ", color = Color.White)
+            }
         }
     }
 }
