@@ -19,6 +19,11 @@ class RazaGameEngine(
     private val INITIAL_SPEED = 5.0f
     private val SPEED_INCREMENT_INTERVAL = 100f
     private val SPEED_INCREMENT_PERCENT = 0.03f
+    private var screenWidth = 1280f
+
+    fun setScreenSize(width: Float) {
+        if (width > 0f) screenWidth = width
+    }
 
     fun startGame() {
         _gameState.value = RazaGameState(currentSpeed = INITIAL_SPEED)
@@ -95,7 +100,7 @@ class RazaGameEngine(
         // - Que haya espacio suficiente (minDistanceBetween)
         // - Máximo 3 en pantalla
         // - Que la suerte (Random) lo decida
-        val finalObstacles = if (lastObstacleX < (1000f - minDistanceBetween) &&
+        val finalObstacles = if (lastObstacleX < (screenWidth - minDistanceBetween) &&
             updatedObstacles.size < 3 &&
             Random.nextFloat() < spawnProbability) {
 
@@ -107,7 +112,7 @@ class RazaGameEngine(
             val obsY = if (type == RazaObstacleType.CARRETO) 310f else 370f
 
             updatedObstacles + RazaObstacle(
-                x = 1100f, // Aparece un poco fuera de la pantalla por la derecha
+                x = screenWidth + 100f, // Aparece un poco fuera de la pantalla por la derecha
                 y = obsY,
                 type = type
             )

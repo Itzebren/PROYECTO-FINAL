@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import com.android.mobile.games.app.games.razarun.engine.RazaGameEngine
 import com.android.mobile.games.app.ui.util.HideSystemBars
 
@@ -38,11 +39,7 @@ fun RazaScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        engine.startGame()
-    }
-
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
@@ -57,6 +54,13 @@ fun RazaScreen(
                 }
             }
     ) {
+        val density = LocalDensity.current
+        val screenWidthPx = with(density) { maxWidth.toPx() }
+
+        LaunchedEffect(screenWidthPx) {
+            engine.setScreenSize(screenWidthPx)
+            engine.startGame()
+        }
         RazaCanvas(state = gameState)
         
         RazaHud(

@@ -98,7 +98,7 @@ fun CodeMergeScreen(
 
                     // Current Element Preview
                     val currentRadius = baseRadius * state.nextLevel.radiusScale
-                    val img = assetMap[state.nextLevel]!!
+                    val img = assetMap[state.nextLevel] ?: return@Canvas
                     drawImage(
                         image = img,
                         dstOffset = IntOffset(
@@ -111,7 +111,7 @@ fun CodeMergeScreen(
                     // Falling Elements
                     state.elements.forEach { el ->
                         val radius = baseRadius * el.level.radiusScale
-                        val elementImg = assetMap[el.level]!!
+                        val elementImg = assetMap[el.level] ?: return@forEach
                         drawImage(
                             image = elementImg,
                             dstOffset = IntOffset(

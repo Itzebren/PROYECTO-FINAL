@@ -34,6 +34,7 @@ import com.android.mobile.games.app.games.catchgame.engine.CatchGameController
 import com.android.mobile.games.app.games.catchgame.data.ICatchGameService
 import com.android.mobile.games.app.games.catchgame.model.CatchGameDifficulty
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -104,7 +105,7 @@ fun CatchGameScreen(
     LaunchedEffect(controller) {
         var lastFrameTimeNanos = 0L
 
-        while (true) {
+        while (isActive) {
             withFrameNanos { frameTimeNanos ->
                 if (lastFrameTimeNanos != 0L) {
                     val deltaSeconds = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000f
@@ -122,6 +123,7 @@ fun CatchGameScreen(
         uiState.isTriviaAnswerLocked
     ) {
         while (
+            isActive &&
             uiState.isTriviaVisible &&
             !uiState.isGameOver &&
             !uiState.isTriviaAnswerLocked

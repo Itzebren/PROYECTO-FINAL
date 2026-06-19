@@ -259,7 +259,7 @@ class CatchGameController(
                 return@forEach
             }
 
-            if (movedItem.y <= screenHeightPx) {
+            if (movedItem.y < screenHeightPx) {
                 updatedItems += movedItem
             } else {
                 if (!movedItem.isBad) {

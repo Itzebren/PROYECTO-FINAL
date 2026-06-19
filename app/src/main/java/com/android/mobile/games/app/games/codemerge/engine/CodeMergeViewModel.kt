@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.sqrt
@@ -62,7 +63,7 @@ class CodeMergeViewModel(
 
     private fun startGameLoop() {
         viewModelScope.launch {
-            while (true) {
+            while (isActive) {
                 kotlinx.coroutines.delay(16) // ~60 FPS
                 handleIntent(CodeMergeIntent.Tick)
             }
@@ -182,9 +183,9 @@ class CodeMergeViewModel(
                             victoryTriggered = true
                         } else {
                             // MERGE!
+                            val nextLvl = e1.level.next() ?: continue
                             toRemove.add(e1.id)
                             toRemove.add(e2.id)
-                            val nextLvl = e1.level.next()!!
                             toAdd.add(CodeElement(
                                 x = (e1.x + e2.x) / 2f,
                                 y = (e1.y + e2.y) / 2f,
@@ -235,7 +236,7 @@ class CodeMergeViewModel(
         var isAboveLine = false
         for (el in finalElements) {
             val radius = BASE_RADIUS * el.level.radiusScale
-            if (el.y - radius < LOSS_LINE_Y && el.vy.absoluteValue < 0.1f && el.y > 100f) {
+            if (el.y - radius < LOSS_LINE_Y && el.vy.absoluteValue < SLEEP_THRESHOLD && el.y > 100f) {
                 isAboveLine = true
                 break
             }

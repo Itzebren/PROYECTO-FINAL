@@ -18,6 +18,7 @@ import com.android.mobile.games.app.games.fruitninja.data.FruitNinjaScoreReposit
 import com.android.mobile.games.app.games.fruitninja.engine.FruitNinjaGameEngine
 import com.android.mobile.games.app.games.fruitninja.model.FruitNinjaDifficulty
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 import com.android.mobile.games.app.games.fruitninja.data.RetrofitGameService
@@ -68,6 +69,7 @@ fun FruitNinjaScreen(
         difficulty
     ) {
         while (
+            isActive &&
             screenWidth > 0f &&
             screenHeight > 0f &&
             !gameState.isGameOver
@@ -86,12 +88,14 @@ fun FruitNinjaScreen(
         gameState.isGameOver,
         difficulty
     ) {
-        while (!gameState.isGameOver) {
-            delay(1_000L)
-
-            gameState = gameEngine.updateTimer(
-                state = gameState
-            )
+        var nextTickMs = System.currentTimeMillis() + 1_000L
+        while (!gameState.isGameOver && isActive) {
+            val toWait = nextTickMs - System.currentTimeMillis()
+            if (toWait > 0L) delay(toWait) else delay(1L)
+            nextTickMs += 1_000L
+            if (!gameState.isGameOver) {
+                gameState = gameEngine.updateTimer(state = gameState)
+            }
         }
     }
 
